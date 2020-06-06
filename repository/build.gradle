@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '2.0.6'
+}
