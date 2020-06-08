@@ -1,39 +1,39 @@
 package com.epam.esm.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan("com.epam.esm")
 @PropertySource("classpath:application.properties")
-public class SpringJdbcConfig {
+public class DataSourceConfig {
 
-    @Value("${db.driver}")
+    @Value("${dataSource.driver}")
     private String driverClassName;
 
-    @Value("${db.url}")
+    @Value("${dataSource.url}")
     private String databaseUrl;
 
-    @Value("${db.username}")
+    @Value("${dataSource.username}")
     private String databaseUsername;
 
-    @Value("${db.password}")
+    @Value("${dataSource.password}")
     private String databaseUserPassword;
-
 
     @Bean
     public DataSource mysqlDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(driverClassName);
-        dataSource.setUrl(databaseUrl);
-        dataSource.setUsername(databaseUsername);
-        dataSource.setPassword(databaseUserPassword);
-        return dataSource;
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(databaseUrl);
+        hikariConfig.setUsername(databaseUsername);
+        hikariConfig.setPassword(databaseUserPassword);
+        hikariConfig.setDriverClassName(driverClassName);
+        return new HikariDataSource(hikariConfig);
     }
 }
