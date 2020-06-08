@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'war'
 }
 
 version 'unspecified'
@@ -15,4 +16,6 @@ dependencies {
     implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.2.4.RELEASE'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.0'
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+    implementation project(':service')
 }
