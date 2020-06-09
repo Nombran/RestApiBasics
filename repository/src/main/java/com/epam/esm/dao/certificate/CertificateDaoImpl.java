@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +21,10 @@ public class CertificateDaoImpl implements CertificateDao{
 
     private final String SQL_FIND = "select * from certificate where id = ?";
     private final String SQL_INSERT = "insert into certificate(name, description, price, creation_date," +
-            " modification_date, duration ) values(?,?,?,?,?,?)";
+            " duration ) values(?,?,?,?,?)";
     private final String SQL_FIND_ALL = "select * from certificate";
     private final String SQL_UPDATE = "update certificate set name = ?, description = ?, price  = ?," +
-            " creation_date = ?, modification_date = ?, duration = ? where id = ?";
+            "modification_date = ?, duration = ? where id = ?";
     private final String SQL_DELETE = "delete from certificate where id = ?";
 
 
@@ -36,14 +37,14 @@ public class CertificateDaoImpl implements CertificateDao{
     @Override
     public boolean create(Certificate certificate) {
         return jdbcTemplate.update(SQL_INSERT, certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), certificate.getCreationDate(), certificate.getModificationDate(),
+                certificate.getPrice(), LocalDateTime.now(),
                 certificate.getDuration()) > 0;
     }
 
     @Override
     public boolean update(Certificate certificate) {
         return jdbcTemplate.update(SQL_UPDATE, certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), certificate.getCreationDate(), certificate.getModificationDate(),
+                certificate.getPrice(), LocalDateTime.now(),
                 certificate.getDuration(), certificate.getId()) > 0;
     }
 
