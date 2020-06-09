@@ -2,6 +2,8 @@ package com.epam.esm.model;
 
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -11,5 +13,6 @@ public class Tag {
 
     private long id;
 
+    @NotBlank
     private String name;
 }
