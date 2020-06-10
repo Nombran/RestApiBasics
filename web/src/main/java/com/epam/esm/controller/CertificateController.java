@@ -1,10 +1,11 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.certificate.CertificateService;
+import com.epam.esm.dao.tag.TagDao;
 import com.epam.esm.model.Certificate;
+import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,9 +18,13 @@ public class CertificateController {
 
     private final CertificateService certificateService;
 
+    private final TagDao tagDao;
+
     @Autowired
-    public CertificateController(CertificateService certificateService) {
+    public CertificateController(CertificateService certificateService,
+                                 TagDao tagDao) {
         this.certificateService = certificateService;
+        this.tagDao = tagDao;
     }
 
     @GetMapping
@@ -61,5 +66,10 @@ public class CertificateController {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "There is no certificate with id " + id)
         );
+    }
+
+    @GetMapping(value = "/{id}/tags")
+    public List<Tag> findAllCertificateTags(@PathVariable(name = "id") long id) {
+        return tagDao.findByCertificateId(id);
     }
 }
