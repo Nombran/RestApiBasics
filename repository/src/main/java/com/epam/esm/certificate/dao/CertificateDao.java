@@ -1,7 +1,7 @@
-package com.epam.esm.dao.certificate;
+package com.epam.esm.certificate.dao;
 
-import com.epam.esm.mapper.CertificateMapper;
-import com.epam.esm.model.Certificate;
+import com.epam.esm.certificate.mapper.CertificateMapper;
+import com.epam.esm.certificate.model.Certificate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -1,4 +1,4 @@
-package com.epam.esm.model;
+package com.epam.esm.tag.model;
 
 import lombok.*;
 

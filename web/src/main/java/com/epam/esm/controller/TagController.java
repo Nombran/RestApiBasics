@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.Tag;
+import com.epam.esm.tag.model.Tag;
 import com.epam.esm.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

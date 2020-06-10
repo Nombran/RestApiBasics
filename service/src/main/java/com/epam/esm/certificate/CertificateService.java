@@ -1,7 +1,7 @@
 package com.epam.esm.certificate;
 
-import com.epam.esm.dao.certificate.CertificateDao;
-import com.epam.esm.model.Certificate;
+import com.epam.esm.certificate.dao.CertificateDao;
+import com.epam.esm.certificate.model.Certificate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

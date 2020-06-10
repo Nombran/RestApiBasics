@@ -1,9 +1,9 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.certificate.CertificateService;
-import com.epam.esm.dao.tag.TagDao;
-import com.epam.esm.model.Certificate;
-import com.epam.esm.model.Tag;
+import com.epam.esm.tag.dao.TagDao;
+import com.epam.esm.certificate.model.Certificate;
+import com.epam.esm.tag.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

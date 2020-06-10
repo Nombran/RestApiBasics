@@ -1,4 +1,4 @@
-package com.epam.esm.model;
+package com.epam.esm.certificate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
