@@ -3,12 +3,16 @@ package com.epam.esm.tag;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class TagService {
 
     private final TagDao tagDao;
@@ -19,11 +23,21 @@ public class TagService {
     }
 
     public boolean create(Tag tag) {
-        return tagDao.create(tag);
+        try {
+            tagDao.create(tag);
+            return true;
+        } catch (DuplicateKeyException e) {
+            return false;
+        }
     }
 
     public boolean delete(long id) {
-        return tagDao.delete(id);
+        try {
+            tagDao.delete(id);
+            return true;
+        } catch (DataIntegrityViolationException e) {
+            return false;
+        }
     }
 
     public Optional<Tag> find(long id) {

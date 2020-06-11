@@ -1,8 +1,9 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.certificate.CertificateService;
-import com.epam.esm.tag.dao.TagDao;
+import com.epam.esm.certificate.dto.CertificateDto;
 import com.epam.esm.certificate.model.Certificate;
+import com.epam.esm.certificate.service.CertificateService;
+import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,25 +30,21 @@ public class CertificateController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Certificate> findAll() {
+    public List<CertificateDto> findAll() {
         return certificateService.findAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@Valid @RequestBody Certificate certificate) {
-        if (!certificateService.create(certificate)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Error in creating certificate");
-        }
+    public void create(@Valid @RequestBody CertificateDto certificate) {
+        certificateService.create(certificate);
     }
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody Certificate certificate, @PathVariable(name = "id") long id) {
+    public void update(@RequestBody CertificateDto certificate, @PathVariable(name = "id") long id) {
         certificate.setId(id);
-        if (!certificateService.update(certificate)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Error in updating certificate");
-        }
+        certificateService.update(certificate);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -61,7 +58,7 @@ public class CertificateController {
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Certificate findById(@PathVariable(name = "id") long id) {
+    public CertificateDto findById(@PathVariable(name = "id") long id) {
         return certificateService.find(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "There is no certificate with id " + id)
