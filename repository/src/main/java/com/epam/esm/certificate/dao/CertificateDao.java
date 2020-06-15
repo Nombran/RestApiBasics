@@ -77,4 +77,8 @@ public class CertificateDao {
     public List<Certificate> findAll() {
         return jdbcTemplate.query(SQL_FIND_ALL, new CertificateMapper());
     }
+
+    public List<Certificate> findCertificates(String query, MapSqlParameterSource parameters) {
+        return namedParameterJdbcTemplate.query(query, parameters, new CertificateMapper());
+    }
 }

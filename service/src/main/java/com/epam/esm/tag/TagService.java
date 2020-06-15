@@ -1,12 +1,15 @@
 package com.epam.esm.tag;
 
+import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +19,14 @@ import java.util.Optional;
 public class TagService {
 
     private final TagDao tagDao;
+    private final CertificateDao certificateDao;
 
     @Autowired
-    public TagService(TagDao tagDao) {
+    public TagService(TagDao tagDao,
+                      CertificateDao certificateDao) {
         this.tagDao = tagDao;
+        this.certificateDao = certificateDao;
+
     }
 
     public boolean create(Tag tag) {
@@ -49,6 +56,11 @@ public class TagService {
     }
 
     public List<Tag> findTagsByCertificateId(long id) {
-        return tagDao.findByCertificateId(id);
+        if(certificateDao.find(id).isPresent()) {
+            return tagDao.findByCertificateId(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "There is no certificate with id = " + id);
+        }
     }
 }

@@ -28,6 +28,8 @@ subprojects {
         implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
         implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.1.5.Final'
         implementation group: 'org.hibernate.validator', name: 'hibernate-validator-annotation-processor', version: '6.1.5.Final'
+        testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+        testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.3.3'
     }
 
     dependencyManagement {

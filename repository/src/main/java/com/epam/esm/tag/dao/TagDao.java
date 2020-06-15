@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -31,6 +31,10 @@ public class TagDao {
             " join certificate_tag on tag.id = certificate_tag.tag_id where " +
             "certificate_tag.certificate_id = ?";
     private final String SQL_FIND_BY_NAME = "select * from tag where name = ?";
+    private final String SQL_FIND_BY_NAME_AND_CERTIFICATE_ID = "select * from tag " +
+            "inner join certificate_tag on tag.id = certificate_tag.tag_id " +
+            "where tag.name = ? and certificate_tag.certificate_id = ?";
+
 
     @Autowired
     public TagDao(DataSource dataSource) {
@@ -82,4 +86,17 @@ public class TagDao {
             return Optional.empty();
         }
     }
+
+    public Optional<Tag> findByNameAndCertificateId(String name, long certificateId) {
+        try {
+            Tag tag = jdbcTemplate.queryForObject(SQL_FIND_BY_NAME_AND_CERTIFICATE_ID,
+                    new Object[]{name, certificateId},
+                    new TagMapper());
+            return Optional.ofNullable(tag);
+        }
+        catch(EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
 }

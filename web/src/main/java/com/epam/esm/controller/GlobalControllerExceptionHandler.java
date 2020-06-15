@@ -21,7 +21,7 @@ public class GlobalControllerExceptionHandler {
        error.setTimestamp(LocalDateTime.now());
        error.setStatus(e.getStatus().value());
        error.setError(e.getStatus().toString());
-       error.setMessage(e.getMessage());
+       error.setMessage(e.getReason());
        return new ResponseEntity<>(error, e.getStatus());
    }
 

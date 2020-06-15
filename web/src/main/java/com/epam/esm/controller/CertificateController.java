@@ -1,11 +1,12 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.certificate.dto.CertificateDto;
-import com.epam.esm.certificate.model.Certificate;
 import com.epam.esm.certificate.service.CertificateService;
+import com.epam.esm.tag.TagService;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,19 +20,25 @@ public class CertificateController {
 
     private final CertificateService certificateService;
 
-    private final TagDao tagDao;
+    private final TagService tagService;
 
     @Autowired
     public CertificateController(CertificateService certificateService,
-                                 TagDao tagDao) {
+                                 TagService tagService) {
         this.certificateService = certificateService;
-        this.tagDao = tagDao;
+        this.tagService = tagService;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CertificateDto> findAll() {
-        return certificateService.findAll();
+    public List<CertificateDto> findCertificates(@RequestParam(name = "tagName", required = false)
+                                        String tagName,
+                                        @RequestParam(name = "descriptionPart", required = false)
+                                        String descriptionPart,
+                                        @RequestParam(name = "orderBy", required = false)
+                                        String orderBy
+                                        ) {
+        return certificateService.findCertificates(tagName, descriptionPart, orderBy);
     }
 
     @PostMapping
@@ -67,6 +74,19 @@ public class CertificateController {
 
     @GetMapping(value = "/{id}/tags")
     public List<Tag> findAllCertificateTags(@PathVariable(name = "id") long id) {
-        return tagDao.findByCertificateId(id);
+        return tagService.findTagsByCertificateId(id);
+    }
+
+    @PostMapping(value = "/{id}/tags")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addTag(@PathVariable(name = "id")long certificateId, @RequestBody Tag tag) {
+            certificateService.addCertificateTag(tag, certificateId);
+    }
+
+    @DeleteMapping(value = "/{id}/tags")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteCertificateTag(@PathVariable(name = "id") long id,
+                                     @RequestBody Tag tag) {
+        certificateService.deleteCertificateTag(tag, id);
     }
 }

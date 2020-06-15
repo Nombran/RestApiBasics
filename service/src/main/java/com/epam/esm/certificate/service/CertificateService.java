@@ -3,21 +3,26 @@ package com.epam.esm.certificate.service;
 import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificate.dto.CertificateDto;
 import com.epam.esm.certificate.model.Certificate;
+import com.epam.esm.certificate.specification.CertificateSearchSqlBuilder;
+import com.epam.esm.certificate.specification.OrderBy;
 import com.epam.esm.certificatetag.dao.CertificateTagDao;
-import com.epam.esm.tag.TagService;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.xml.crypto.Data;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -67,8 +72,22 @@ public class CertificateService {
                 .map(certificate -> modelMapper.map(certificate, CertificateDto.class));
     }
 
-    public List<CertificateDto> findAll() {
-        return certificateDao.findAll()
+    public List<CertificateDto> findCertificates(String tagName, String descriptionPart, String orderBy) {
+        CertificateSearchSqlBuilder specification =
+                new CertificateSearchSqlBuilder(tagName, descriptionPart, orderBy);
+        if(orderBy != null && !specification.checkOrderBy()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Invalid orderBy parameter");
+        }
+        String query = specification.getSqlQuery();
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        if (tagName != null) {
+            parameters.addValue("tag_name", tagName);
+        }
+        if (descriptionPart != null) {
+            parameters.addValue("description", "%" + descriptionPart + "%");
+        }
+        return certificateDao.findCertificates(query, parameters)
                 .stream()
                 .map(certificate -> modelMapper.map(certificate, CertificateDto.class))
                 .collect(Collectors.toList());
@@ -99,5 +118,34 @@ public class CertificateService {
                 .filter(tagName -> !certificateTagNamesBeforeUpdate.contains(tagName))
                 .collect(Collectors.toList());
         addCertificateTags(tagsToAdd, certificateId);
+    }
+
+    public void addCertificateTag(Tag tag, long certificateId) {
+        Tag tagToAdd = tagDao.findByName(tag.getName()).orElseGet(() ->
+                tagDao.create(tag)
+        );
+        try {
+            certificateTagDao.create(certificateId, tagToAdd.getId());
+        } catch (DuplicateKeyException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "The certificate already has this tag");
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "There is no certificate with id = " + certificateId);
+        }
+    }
+
+    public void deleteCertificateTag(Tag tag, long certificateId) {
+        if (certificateDao.find(certificateId).isPresent()) {
+            Tag tagToDelete = tagDao.findByNameAndCertificateId(tag.getName(), certificateId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "Certificate with id " + certificateId +
+                                        " doesnt have tag with name " + tag.getName())
+                    );
+            certificateTagDao.delete(certificateId, tagToDelete.getId());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "There is no certificate with id = " + certificateId);
+        }
     }
 }
