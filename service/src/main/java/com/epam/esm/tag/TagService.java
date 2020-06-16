@@ -31,8 +31,7 @@ public class TagService {
 
     public boolean create(Tag tag) {
         try {
-            tagDao.create(tag);
-            return true;
+            return tagDao.create(tag) != null;
         } catch (DuplicateKeyException e) {
             return false;
         }
@@ -40,8 +39,7 @@ public class TagService {
 
     public boolean delete(long id) {
         try {
-            tagDao.delete(id);
-            return true;
+            return tagDao.delete(id);
         } catch (DataIntegrityViolationException e) {
             return false;
         }

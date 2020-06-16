@@ -19,16 +19,20 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
+@RequiredArgsConstructor
 public class CertificateDto {
 
     private long id;
 
+    @NonNull
     @NotBlank
     private String name;
 
+    @NonNull
     @NotBlank
     private String description;
 
+    @NonNull
     @DecimalMin(value = "0.0")
     @NotNull
     private BigDecimal price;
@@ -39,8 +43,10 @@ public class CertificateDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime modificationDate;
 
+    @NonNull
     @Min(1)
     private int duration;
 
+    @NonNull
     private List<String> tags;
 }
