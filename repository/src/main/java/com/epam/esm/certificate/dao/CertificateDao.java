@@ -41,14 +41,16 @@ public class CertificateDao {
 
     public Certificate create(Certificate certificate) {
         KeyHolder holder = new GeneratedKeyHolder();
+        LocalDateTime creationDate = LocalDateTime.now();
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", certificate.getName())
                 .addValue("description", certificate.getDescription())
                 .addValue("price", certificate.getPrice())
-                .addValue("creation_date", LocalDateTime.now())
+                .addValue("creation_date", creationDate)
                 .addValue("duration", certificate.getDuration());
         namedParameterJdbcTemplate.update(SQL_INSERT, parameters, holder, new String[] { "id" });
         certificate.setId(holder.getKey().longValue());
+        certificate.setCreationDate(creationDate);
         return certificate;
     }
 

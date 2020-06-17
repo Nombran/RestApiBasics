@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -20,15 +21,19 @@ public class Certificate {
 
     private long id;
 
+    @NonNull
     private String name;
 
+    @NonNull
     private String description;
 
+    @NonNull
     private BigDecimal price;
 
     private LocalDateTime creationDate;
 
     private LocalDateTime modificationDate;
 
+    @NonNull
     private int duration;
 }
