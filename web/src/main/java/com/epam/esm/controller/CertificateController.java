@@ -83,10 +83,10 @@ public class CertificateController {
             certificateService.addCertificateTag(tag, certificateId);
     }
 
-    @DeleteMapping(value = "/{id}/tags")
+    @DeleteMapping(value = "/{id}/tags/{tagId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteCertificateTag(@PathVariable(name = "id") long id,
-                                     @RequestBody Tag tag) {
-        certificateService.deleteCertificateTag(tag, id);
+    public void deleteCertificateTag(@PathVariable(name = "id") long certificateId,
+                                     @PathVariable(name = "tagId") long tagId) {
+        certificateService.deleteCertificateTag(certificateId, tagId);
     }
 }

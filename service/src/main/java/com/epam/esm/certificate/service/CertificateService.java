@@ -135,14 +135,14 @@ public class CertificateService {
         }
     }
 
-    public void deleteCertificateTag(Tag tag, long certificateId) {
+    public void deleteCertificateTag(long certificateId, long tagId) {
         if (certificateDao.find(certificateId).isPresent()) {
-            Tag tagToDelete = tagDao.findByNameAndCertificateId(tag.getName(), certificateId)
+            Tag tagToDelete = tagDao.findByIdAndCertificateId(tagId, certificateId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                 "Certificate with id " + certificateId +
-                                        " doesnt have tag with name " + tag.getName())
+                                        " doesnt have tag with id " + tagId)
                     );
-            certificateTagDao.delete(certificateId, tagToDelete.getId());
+            certificateTagDao.delete(certificateId, tagId);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "There is no certificate with id = " + certificateId);

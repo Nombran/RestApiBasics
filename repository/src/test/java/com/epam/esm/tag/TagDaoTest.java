@@ -100,7 +100,7 @@ public class TagDaoTest {
     public void findByNameAndCertificateIdTest() {
         Tag expected = new Tag(1, "tag one");
 
-        Tag result = tagDao.findByNameAndCertificateId("tag one", 1).get();
+        Tag result = tagDao.findByIdAndCertificateId(1, 1).get();
 
         assertEquals(expected, result);
     }

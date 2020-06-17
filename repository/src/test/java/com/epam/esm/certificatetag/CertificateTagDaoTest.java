@@ -56,7 +56,7 @@ public class CertificateTagDaoTest {
     public void deleteCertificateTag() {
         certificateTagDao.delete(1,1);
 
-        Optional<Tag> result = tagDao.findByNameAndCertificateId("tag one", 1);
+        Optional<Tag> result = tagDao.findByIdAndCertificateId(1, 1);
         assertFalse(result.isPresent());
     }
 

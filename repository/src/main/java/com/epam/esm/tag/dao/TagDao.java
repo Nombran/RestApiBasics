@@ -31,9 +31,9 @@ public class TagDao {
             " join certificate_tag on tag.id = certificate_tag.tag_id where " +
             "certificate_tag.certificate_id = ?";
     private final String SQL_FIND_BY_NAME = "select * from tag where name = ?";
-    private final String SQL_FIND_BY_NAME_AND_CERTIFICATE_ID = "select * from tag " +
+    private final String SQL_FIND_BY_ID_AND_CERTIFICATE_ID = "select * from tag " +
             "inner join certificate_tag on tag.id = certificate_tag.tag_id " +
-            "where tag.name = ? and certificate_tag.certificate_id = ?";
+            "where tag.id = ? and certificate_tag.certificate_id = ?";
 
 
     @Autowired
@@ -87,10 +87,10 @@ public class TagDao {
         }
     }
 
-    public Optional<Tag> findByNameAndCertificateId(String name, long certificateId) {
+    public Optional<Tag> findByIdAndCertificateId(long id, long certificateId) {
         try {
-            Tag tag = jdbcTemplate.queryForObject(SQL_FIND_BY_NAME_AND_CERTIFICATE_ID,
-                    new Object[]{name, certificateId},
+            Tag tag = jdbcTemplate.queryForObject(SQL_FIND_BY_ID_AND_CERTIFICATE_ID,
+                    new Object[]{id, certificateId},
                     new TagMapper());
             return Optional.ofNullable(tag);
         }
