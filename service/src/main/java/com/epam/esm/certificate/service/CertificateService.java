@@ -4,7 +4,6 @@ import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificate.dto.CertificateDto;
 import com.epam.esm.certificate.model.Certificate;
 import com.epam.esm.certificate.specification.CertificateSearchSqlBuilder;
-import com.epam.esm.certificate.specification.OrderBy;
 import com.epam.esm.certificatetag.dao.CertificateTagDao;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
@@ -18,11 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional

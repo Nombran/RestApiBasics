@@ -1,6 +1,12 @@
 package com.epam.esm.tag.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 import javax.validation.constraints.NotBlank;
 

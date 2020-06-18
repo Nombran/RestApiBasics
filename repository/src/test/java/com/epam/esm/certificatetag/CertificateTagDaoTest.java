@@ -1,6 +1,5 @@
 package com.epam.esm.certificatetag;
 
-import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificatetag.dao.CertificateTagDao;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
@@ -12,8 +11,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 public class CertificateTagDaoTest {

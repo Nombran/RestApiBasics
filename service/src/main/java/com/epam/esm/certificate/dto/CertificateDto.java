@@ -1,9 +1,14 @@
 package com.epam.esm.certificate.dto;
 
-import com.epam.esm.tag.model.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;

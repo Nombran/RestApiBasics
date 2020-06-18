@@ -3,11 +3,11 @@ import java.util.stream.Stream;
 
 public class CertificateSearchSqlBuilder {
 
-    private String tagName;
+    private final String tagName;
 
-    private String descriptionPart;
+    private final String descriptionPart;
 
-    private String orderBy;
+    private final String orderBy;
 
     private final String  SQL_FIND_ALL = "select * from certificate";
 
