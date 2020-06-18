@@ -3,6 +3,7 @@ package com.epam.esm.tag;
 import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional
 public class TagService {
@@ -32,6 +34,7 @@ public class TagService {
         try {
             return tagDao.create(tag) != null;
         } catch (DuplicateKeyException e) {
+            log.error("Tag with name " + tag.getName() + "already exists");
             return false;
         }
     }
@@ -40,6 +43,8 @@ public class TagService {
         try {
             return tagDao.delete(id);
         } catch (DataIntegrityViolationException e) {
+            log.error("Cannot delete tag with id " + id +
+                    " because of relationships with some certificate");
             return false;
         }
     }

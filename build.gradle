@@ -30,6 +30,9 @@ subprojects {
         implementation group: 'org.hibernate.validator', name: 'hibernate-validator-annotation-processor', version: '6.1.5.Final'
         testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
         testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.3.3'
+        implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+        implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
+
     }
 
     dependencyManagement {

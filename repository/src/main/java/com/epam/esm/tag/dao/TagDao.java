@@ -2,7 +2,7 @@ package com.epam.esm.tag.dao;
 
 import com.epam.esm.tag.mapper.TagMapper;
 import com.epam.esm.tag.model.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 public class TagDao {
 
@@ -62,6 +63,7 @@ public class TagDao {
             return Optional.ofNullable(tag);
         }
         catch(EmptyResultDataAccessException e) {
+            log.info("Tag with id " + id + " doesn't exist");
             return Optional.empty();
         }
     }
@@ -82,6 +84,7 @@ public class TagDao {
         return Optional.ofNullable(tag);
         }
         catch(EmptyResultDataAccessException e) {
+            log.info("Tag with name " + name + " doesn't exist");
             return Optional.empty();
         }
     }
@@ -94,6 +97,8 @@ public class TagDao {
             return Optional.ofNullable(tag);
         }
         catch(EmptyResultDataAccessException e) {
+            log.info("Tag with id " + id + "which connected with certificate with id "
+                    + certificateId + " not found");
             return Optional.empty();
         }
     }

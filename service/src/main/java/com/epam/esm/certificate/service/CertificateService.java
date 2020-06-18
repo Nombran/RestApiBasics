@@ -7,6 +7,7 @@ import com.epam.esm.certificate.specification.CertificateSearchSqlBuilder;
 import com.epam.esm.certificatetag.dao.CertificateTagDao;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 public class CertificateService {
@@ -123,9 +125,12 @@ public class CertificateService {
         try {
             certificateTagDao.create(certificateId, tagToAdd.getId());
         } catch (DuplicateKeyException e) {
+            log.error("Certificate with id " + certificateId +
+                    " already has tag " + tag.getName());
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "The certificate already has this tag");
         } catch (DataIntegrityViolationException e) {
+            log.error("Certificate with id " + certificateId + " doesn't exist");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "There is no certificate with id = " + certificateId);
         }

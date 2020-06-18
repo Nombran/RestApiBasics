@@ -2,6 +2,7 @@ package com.epam.esm.certificate.dao;
 
 import com.epam.esm.certificate.mapper.CertificateMapper;
 import com.epam.esm.certificate.model.Certificate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 public class CertificateDao {
 
@@ -73,6 +75,7 @@ public class CertificateDao {
             return Optional.ofNullable(certificate);
         }
         catch(EmptyResultDataAccessException e) {
+            log.info("Certificate with id " + id + "doesn't exists");
             return Optional.empty();
         }
     }
