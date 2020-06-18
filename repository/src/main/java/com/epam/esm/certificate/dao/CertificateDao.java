@@ -24,10 +24,12 @@ public class CertificateDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private final String SQL_FIND = "select * from certificate where id = ?";
+    private final String SQL_FIND = "select id, name, description, price," +
+            " creation_date, modification_date, duration from certificate where id = ?";
     private final String SQL_INSERT = "insert into certificate (name, description, price, creation_date," +
             " duration) values (:name, :description, :price, :creation_date, :duration)";
-    private final String SQL_FIND_ALL = "select * from certificate";
+    private final String SQL_FIND_ALL = "select id, name, description, price," +
+            " creation_date, modification_date, duration from certificate";
     private final String SQL_UPDATE = "update certificate set name = ?, description = ?, price  = ?," +
             "modification_date = ?, duration = ? where id = ?";
     private final String SQL_DELETE = "delete from certificate where id = ?";

@@ -23,15 +23,15 @@ public class TagDao {
     private final JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private final String SQL_FIND = "select * from tag where id = ?";
+    private final String SQL_FIND = "select id, name from tag where id = ?";
     private final String SQL_INSERT = "insert into tag (name) values (:name)";
-    private final String SQL_FIND_ALL = "select * from tag";
+    private final String SQL_FIND_ALL = "select id, name from tag";
     private final String SQL_DELETE = "delete from tag where id = ?";
-    private final String SQL_FIND_BY_CERTIFICATE_ID = "select * from tag inner" +
+    private final String SQL_FIND_BY_CERTIFICATE_ID = "select id, name from tag inner" +
             " join certificate_tag on tag.id = certificate_tag.tag_id where " +
             "certificate_tag.certificate_id = ?";
-    private final String SQL_FIND_BY_NAME = "select * from tag where name = ?";
-    private final String SQL_FIND_BY_ID_AND_CERTIFICATE_ID = "select * from tag " +
+    private final String SQL_FIND_BY_NAME = "select id, name from tag where name = ?";
+    private final String SQL_FIND_BY_ID_AND_CERTIFICATE_ID = "select id, name from tag " +
             "inner join certificate_tag on tag.id = certificate_tag.tag_id " +
             "where tag.id = ? and certificate_tag.certificate_id = ?";
 
