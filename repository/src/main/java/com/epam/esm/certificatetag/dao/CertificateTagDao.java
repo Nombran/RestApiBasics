@@ -20,8 +20,7 @@ public class CertificateTagDao {
     private final String SQL_DELETE_BY_CERTIFICATE_ID = "delete from certificate_tag where " +
             "certificate_id = ?";
 
-    @Autowired
-    public CertificateTagDao(DataSource dataSource) {
+    public CertificateTagDao(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 

@@ -21,7 +21,7 @@ import java.util.Optional;
 public class TagDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final String SQL_FIND = "select id, name from tag where id = ?";
     private final String SQL_INSERT = "insert into tag (name) values (:name)";
@@ -36,8 +36,7 @@ public class TagDao {
             "where tag.id = ? and certificate_tag.certificate_id = ?";
 
 
-    @Autowired
-    public TagDao(DataSource dataSource) {
+    public TagDao(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }

@@ -35,8 +35,7 @@ public class CertificateDao {
     private final String SQL_DELETE = "delete from certificate where id = ?";
 
 
-    @Autowired
-    public CertificateDao(DataSource dataSource) {
+    public CertificateDao(final DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
         namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }

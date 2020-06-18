@@ -21,7 +21,6 @@ public class TagService {
     private final TagDao tagDao;
     private final CertificateDao certificateDao;
 
-    @Autowired
     public TagService(TagDao tagDao,
                       CertificateDao certificateDao) {
         this.tagDao = tagDao;

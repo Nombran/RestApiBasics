@@ -33,7 +33,6 @@ public class CertificateService {
 
     private final ModelMapper modelMapper;
 
-    @Autowired
     public CertificateService(TagDao tagDao,
                               CertificateDao certificateDao,
                               ModelMapper modelMapper,
