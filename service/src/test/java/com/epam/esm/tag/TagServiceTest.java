@@ -39,65 +39,80 @@ public class TagServiceTest {
     }
 
     @Test
-    public void createTagTest() {
+    public void create_CorrectTag_ShouldReturnTrue() {
+        //Given
         Tag tag = new Tag("Tag for test");
         Mockito.when(tagDao.create(tag)).thenReturn(tag);
 
+        //When
         boolean result = tagService.create(tag);
 
-        verify(tagDao, times(1)).create(tag);
+        //Then
         assertTrue(result);
+        verify(tagDao, times(1)).create(tag);
     }
 
     @Test
-    public void deleteTagTest() {
+    public void delete_CorrectCertificateId_ShouldReturnTrue() {
+        //Given
         long tagId = 1;
         Mockito.when(tagDao.delete(1)).thenReturn(true);
 
+        //When
         boolean result = tagService.delete(tagId);
 
+        //Then
         verify(tagDao, times(1)).delete(tagId);
         assertTrue(result);
     }
 
     @Test
-    public void findTagTest() {
+    public void find_ExistentTagId_ShouldReturnCorrectTag() {
+        //Given
         long tagId = 1;
         Tag tag = new Tag(1, "Tag for test");
         Mockito.when(tagDao.find(1)).thenReturn(Optional.of(tag));
 
+        //When
         Optional<Tag> result = tagService.find(tagId);
 
+        //Then
         verify(tagDao, times(1)).find(tagId);
         assertEquals(tag, result.get());
     }
 
     @Test
-    public void findAllTagsTest() {
-        Tag tagOne = new Tag(1,"tagOne");
+    public void findAll_ShouldReturnAllTags() {
+        //Given
+        Tag tagOne = new Tag(1, "tagOne");
         Tag tagTwo = new Tag(2, "tagTwo");
         Tag tagThree = new Tag(3, "tagThree");
-        List<Tag> tagList = Arrays.asList(tagOne,tagTwo,tagThree);
+        List<Tag> tagList = Arrays.asList(tagOne, tagTwo, tagThree);
         Mockito.when(tagDao.findAll()).thenReturn(tagList);
 
+        //When
         List<Tag> result = tagService.findAll();
 
-        verify(tagDao, times(1)).findAll();
+        //Then
         assertEquals(tagList, result);
+        verify(tagDao, times(1)).findAll();
     }
 
     @Test
-    public void findTagsByCertificateId() {
-        Tag tagOne = new Tag(1,"tagOne");
+    public void findTagsByCertificateId_ExistentCertificateId_ShouldReturnNonEmptyList() {
+        //Given
+        Tag tagOne = new Tag(1, "tagOne");
         Tag tagTwo = new Tag(2, "tagTwo");
         Tag tagThree = new Tag(3, "tagThree");
-        List<Tag> tagList = Arrays.asList(tagOne,tagTwo,tagThree);
+        List<Tag> tagList = Arrays.asList(tagOne, tagTwo, tagThree);
         Mockito.when(tagDao.findByCertificateId(anyLong())).thenReturn(tagList);
         Mockito.when(certificateDao.find(anyLong()))
                 .thenReturn(Optional.of(new Certificate()));
 
+        //When
         List<Tag> result = tagService.findTagsByCertificateId(anyLong());
 
+        //Then
         verify(tagDao, times(1)).findByCertificateId(anyLong());
         assertEquals(tagList, result);
     }

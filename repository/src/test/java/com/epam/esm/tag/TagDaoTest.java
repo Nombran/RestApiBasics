@@ -39,71 +39,91 @@ public class TagDaoTest {
 
 
     @Test
-    public void createTagTest() {
+    public void create_NonexistentTag_ShouldReturnCreatedTag() {
+        //Given
         String expected = "tag for test";
         Tag tag = new Tag(expected);
 
+        //When
         Tag result = tagDao.create(tag);
 
+        //Then
         assertTrue(result.getId() > 0);
         assertEquals(expected, result.getName());
     }
 
     @Test
-    public void deleteTagTest() {
+    public void delete_ExistentTagId_ShouldReturnTrue() {
+        //Given
         int expected = 4;
 
+        //When
         boolean result = tagDao.delete(1);
 
-        assertEquals(expected, tagDao.findAll().size());
+        //Then
         assertTrue(result);
         assertFalse(tagDao.find(1).isPresent());
     }
 
     @Test
-    public void findTagByIdTest() {
+    public void find_ExistentTagId_ShouldReturnNonNullTag() {
+        //Given
         Tag expected = new Tag(1, "tag one");
 
+        //When
         Tag result = tagDao.find(1).orElseGet(null);
 
+        //Then
         assertEquals(expected, result);
     }
 
     @Test
-    public void findAllTest() {
+    public void findAll_ShouldReturnNonEmptyList() {
+        //Given
         int expectedSize = 5;
 
+        //When
         List<Tag> result = tagDao.findAll();
 
+        //Then
         assertEquals(expectedSize, result.size());
     }
 
     @Test
-    public void findByName() {
+    public void findByName_NameOfExistentTag_ShouldReturnNonNullTag() {
+        //Given
         Tag expected = new Tag(1, "tag one");
 
+        //When
         Tag result = tagDao.findByName("tag one").get();
 
+        //Then
         assertEquals(expected, result);
     }
 
     @Test
-    public void findByCertificateIdTest() {
+    public void findByCertificateId_ExistentCertificateId_ShouldReturnNonEmptyList() {
+        //Given
         Tag tagOne = new Tag(3, "tag three");
         Tag tagTwo = new Tag(4, "fourth tag");
         List<Tag> expected = Arrays.asList(tagOne, tagTwo);
 
+        //When
         List<Tag> result = tagDao.findByCertificateId(2);
 
+        //Then
         assertEquals(expected, result);
     }
 
     @Test
-    public void findByNameAndCertificateIdTest() {
+    public void findByNameAndCertificateId_ExistentTagNameAndCertificateId_ShouldReturnNonNullTag() {
+        //Given
         Tag expected = new Tag(1, "tag one");
 
+        //When
         Tag result = tagDao.findByIdAndCertificateId(1, 1).get();
 
+        //Then
         assertEquals(expected, result);
     }
 

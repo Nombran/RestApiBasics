@@ -39,33 +39,36 @@ public class CertificateTagDaoTest {
     }
 
     @Test
-    public void createCertificateTagTest() {
-        Tag tag = tagDao.find(1).get();
+    public void create_ExistentTagIdAndCertificateId_ShouldReturnNonEmptyList() {
+        //Given
         int sizeBeforeCreate = tagDao.findByCertificateId(3).size();
 
+        //When
         boolean result = certificateTagDao.create(3, 1);
-        int actualSize = tagDao.findByCertificateId(3).size();
-        List<Tag> tagsByCertificateId = tagDao.findByCertificateId(3);
 
+        //Then
+        int actualSize = tagDao.findByCertificateId(3).size();
         assertTrue(result);
         assertEquals(sizeBeforeCreate + 1, actualSize);
-        assertEquals(tag, tagsByCertificateId.get(0));
     }
 
     @Test
-    public void deleteCertificateTag() {
+    public void delete_ExistentCertificateIdAndTagId_ShouldDeleteFromDB() {
+        //When
         certificateTagDao.delete(1,1);
 
+        //Then
         Optional<Tag> result = tagDao.findByIdAndCertificateId(1, 1);
         assertFalse(result.isPresent());
     }
 
     @Test
-    public void deleteByCertificateId() {
+    public void deleteByCertificateId_CertificateId_FindByCertificateShouldBeEmpty() {
+        //When
         certificateTagDao.deleteByCertificateId(1);
 
+        //Then
         boolean result = tagDao.findByCertificateId(1).size() == 0;
-
         assertTrue(result);
     }
 }

@@ -62,11 +62,11 @@ public class CertificateController {
     }
 
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable(name = "id") long id) {
         if (!certificateService.delete(id)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Cannot delete certificate with id = " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Certificate with id = " + id + " doesn't exist");
         }
     }
 

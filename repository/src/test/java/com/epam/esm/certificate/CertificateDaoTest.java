@@ -37,25 +37,31 @@ public class CertificateDaoTest {
     }
 
     @Test
-    public void createCertificateTest() {
+    public void create_UniqueCertificate_ShouldReturnWithIdAndCreationDate() {
+        //Given
         Certificate certificate = new Certificate("name", "description",
                 new BigDecimal("12.6"), 12);
 
+        //When
         Certificate expected = certificateDao.create(certificate);
 
+        //Then
         assertTrue(expected.getId() > 0);
         assertNotNull(expected.getCreationDate());
     }
 
     @Test
-    public void updateCertificateTest() {
+    public void update_ExistentCertificateWithUpdates_ShouldReturnTrue() {
+        //Given
         Certificate certificate = certificateDao.find(1).get();
         certificate.setName("new name");
         certificate.setPrice(new BigDecimal("9.99"));
 
+        //When
         boolean result = certificateDao.update(certificate);
-        Certificate updated = certificateDao.find(1).get();
 
+        //Then
+        Certificate updated = certificateDao.find(1).get();
         assertTrue(result);
         assertEquals(updated.getName(), "new name");
         assertNotNull(updated.getModificationDate());
@@ -63,44 +69,56 @@ public class CertificateDaoTest {
     }
 
     @Test
-    public void deleteCertificateTest() {
+    public void delete_ExistentCertificateId_ShouldReturnTrue() {
+        //Given
         int expectedSize = certificateDao.findAll().size() - 1;
 
+        //When
         boolean result = certificateDao.delete(4);
-        int actualSize = certificateDao.findAll().size();
 
+        //Then
+        int actualSize = certificateDao.findAll().size();
         assertTrue(result);
         assertEquals(expectedSize, actualSize);
     }
 
     @Test(expected = DataIntegrityViolationException.class)
-    public void deleteCertificateExpectedExceptionTest() {
+    public void delete_CertificateWithTags_ShouldThrowException() {
+        //When
         certificateDao.delete(1);
     }
 
     @Test
-    public void findCertificateById() {
+    public void find_ExistentCertificateId_ShouldReturnExpected() {
+        //Given
         LocalDateTime expectedDateTime = LocalDateTime.of(2020, 6, 9, 0, 0);
         Certificate expected = new Certificate(1, "certificate one", "description",
                 new BigDecimal("12.5"), expectedDateTime, null, 5);
 
+        //When
         Certificate result = certificateDao.find(1).get();
 
+
+        //Then
         assertEquals(expected, result);
     }
 
     @Test
-    public void findAllCertificatesTest() {
+    public void findAll_ShouldReturnNonEmptyList() {
+        //Given
         int expectedListSize = 4;
 
+        //When
         List<Certificate> certificates = certificateDao.findAll();
-        int actualListSize = certificates.size();
 
+        //Then
+        int actualListSize = certificates.size();
         assertEquals(expectedListSize, actualListSize);
     }
 
     @Test
-    public void findCertificatesByParameters() {
+    public void findCertificates_TagName_ShouldReturnOneTag() {
+        //Given
         String tagName = "fifth tag";
         String query = new CertificateSearchSqlBuilder("fifth tag", null,null).getSqlQuery();
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
@@ -110,8 +128,10 @@ public class CertificateDaoTest {
                 new BigDecimal("2.5"), expectedDateTime, null, 18);
         int expectedResultSize = 1;
 
+        //When
         List<Certificate> result = certificateDao.findCertificates(query, mapSqlParameterSource);
 
+        //Then
         assertEquals(expectedResultSize, result.size());
         assertEquals(expectedCertificate.getName(), result.get(0).getName());
     }

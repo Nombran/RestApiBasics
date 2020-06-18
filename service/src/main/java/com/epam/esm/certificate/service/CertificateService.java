@@ -9,7 +9,6 @@ import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -47,7 +46,14 @@ public class CertificateService {
 
     public void create(CertificateDto certificateDto) {
         Certificate certificate = modelMapper.map(certificateDto, Certificate.class);
-        certificateDao.create(certificate);
+        try {
+            certificateDao.create(certificate);
+        } catch (DuplicateKeyException e) {
+            log.error("Certificate with name " + certificate.getName() +
+                    " already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Certificate with name "
+                    + certificate.getName() + " already exists");
+        }
         List<String> tags = certificateDto.getTags();
         addCertificateTags(tags, certificate.getId());
     }
@@ -55,7 +61,17 @@ public class CertificateService {
     public void update(CertificateDto certificateDto) {
         Certificate certificate = modelMapper.map(certificateDto, Certificate.class);
         long certificateId = certificate.getId();
-        certificateDao.update(certificate);
+        try {
+            if(!certificateDao.update(certificate)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate with id "
+                        + certificate.getId() + " doesn't exist");
+            }
+        } catch (DuplicateKeyException e) {
+            log.error("Certificate with name " + certificate.getName() +
+                    " already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Certificate with name "
+                    + certificate.getName() + " already exists");
+        }
         List<String> tags = certificateDto.getTags();
         updateCertificateTags(tags, certificateId);
     }
@@ -91,7 +107,7 @@ public class CertificateService {
                 .collect(Collectors.toList());
     }
 
-    public void addCertificateTags(List<String> tags, long certificateId) {
+    private void addCertificateTags(List<String> tags, long certificateId) {
         tags.forEach(tagName -> {
             Tag tag = tagDao.findByName(tagName).orElseGet(() -> {
                 Tag newTag = new Tag();
@@ -102,7 +118,7 @@ public class CertificateService {
         });
     }
 
-    public void updateCertificateTags(List<String> tags, long certificateId) {
+    private void updateCertificateTags(List<String> tags, long certificateId) {
         List<Tag> certificateTagsBeforeUpdate = tagDao.findByCertificateId(certificateId);
         certificateTagsBeforeUpdate.forEach(tag -> {
             if (!tags.contains(tag.getName())) {
@@ -138,7 +154,7 @@ public class CertificateService {
 
     public void deleteCertificateTag(long certificateId, long tagId) {
         if (certificateDao.find(certificateId).isPresent()) {
-            Tag tagToDelete = tagDao.findByIdAndCertificateId(tagId, certificateId)
+            tagDao.findByIdAndCertificateId(tagId, certificateId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                 "Certificate with id " + certificateId +
                                         " doesnt have tag with id " + tagId)

@@ -1,11 +1,10 @@
 package com.epam.esm.certificate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificate.dto.CertificateDto;
@@ -23,17 +22,16 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CertificateServiceTest {
 
@@ -59,7 +57,9 @@ public class CertificateServiceTest {
 
 
     @Test
-    public void createCertificateTest() {
+    public void create_CertificateWithTags_ShouldEndWithoutException() {
+        //Given
+        List<Certificate> certificatesDB = new ArrayList<>();
         Tag tagOne = new Tag(1, "tagOne");
         Tag tagTwo = new Tag(2, "tagTwo");
         List<Tag> tagsInDB = Arrays.asList(tagOne, tagTwo);
@@ -74,20 +74,50 @@ public class CertificateServiceTest {
                 5, Arrays.asList("tagOne", "tagTwo"));
         Mockito.when(certificateDao.create(any(Certificate.class))).thenAnswer(invocation -> {
             Certificate certificate = invocation.getArgument(0);
-            certificate.setId(anyLong());
+            certificate.setId(1);
+            certificatesDB.add(certificate);
             return certificate;
         });
+
+        //When
         certificateService.create(certificateDto);
 
+        //Then
+        assertEquals(1,certificatesDB.size());
         verify(certificateDao, times(1)).create(any(Certificate.class));
         verify(tagDao, times(2)).findByName(anyString());
         verify(certificateTagDao, times(2)).create(anyLong(), anyLong());
     }
 
+    @Test(expected = ResponseStatusException.class)
+    public void create_CertificateWithDuplicateName_ShouldThrowException() {
+        CertificateDto certificateDto = new CertificateDto("name", "description", new BigDecimal("12.6"),
+                5, Collections.emptyList());
+        Mockito.when(certificateTagDao.create(anyLong(), anyLong())).thenReturn(true);
+        Mockito.when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
+        Mockito.when(certificateDao.create(any(Certificate.class)))
+                .thenThrow(new DuplicateKeyException("message"));
+
+        certificateService.create(certificateDto);
+    }
+
     @Test
-    public void updateCertificateTest() {
-        Mockito.when(certificateDao.update(any(Certificate.class))).thenReturn(true);
-        CertificateDto certificateDto = new CertificateDto(1, "name", "description",
+    public void update_CertificateWithUpdatedName_ShouldEndWithoutException() {
+        //Given
+        Certificate certificateBeforeUpdate = new Certificate(1, "name", "description",
+                new BigDecimal("12.6"), LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+                5);
+        List<Certificate> certificatesInDB = Collections.singletonList(certificateBeforeUpdate);
+        Mockito.when(certificateDao.update(any(Certificate.class))).thenAnswer(invocation -> {
+            Certificate certificate = invocation.getArgument(0);
+            certificatesInDB.forEach(item -> {
+                if(item.getId() == certificate.getId()) {
+                    item = certificate;
+                }
+            });
+            return true;
+        });
+        CertificateDto certificateDto = new CertificateDto(1, "updated name", "description",
                 new BigDecimal("12.6"), LocalDateTime.now(), LocalDateTime.now().plusDays(1),
                 5, Arrays.asList("tagOne", "tagThree"));
         Certificate certificate = modelMapper.map(certificateDto, Certificate.class);
@@ -109,9 +139,13 @@ public class CertificateServiceTest {
                     .filter(tag -> tag.getName().equals(tagName))
                     .findFirst();
         });
+        certificateBeforeUpdate.setName("updated name");
 
+        //When
         certificateService.update(certificateDto);
 
+        //Then
+        assertEquals(certificateBeforeUpdate, certificatesInDB.get(0));
         verify(certificateDao, times(1)).update(certificate);
         verify(tagDao, times(1)).findByCertificateId(1);
         verify(certificateTagDao, times(1)).delete(1,2);
@@ -121,18 +155,42 @@ public class CertificateServiceTest {
     }
 
     @Test
-    public void deleteCertificateTest() {
+    public void delete_CertificateWithCorrectId_ShouldReturnTrue() {
+        //Given
         Mockito.when(certificateTagDao.delete(anyLong(),anyLong())).thenReturn(true);
-        Mockito.when(certificateDao.delete(1)).thenReturn(true);
+        Mockito.when(certificateDao.delete(1)).thenAnswer((invocation)-> {
+            return (Long) invocation.getArgument(0) == 1;
+        });
 
-        certificateService.delete(1);
+        //When
+        boolean result = certificateService.delete(1);
 
+        //Then
+        assertTrue(result);
         verify(certificateTagDao,times(1)).deleteByCertificateId(anyLong());
         verify(certificateDao, times(1)).delete(1);
     }
 
     @Test
-    public void findCertificateTest() {
+    public void delete_CertificateWithNonexistentId_ShouldReturnFalse() {
+        //Given
+        Mockito.when(certificateTagDao.delete(anyLong(),anyLong())).thenReturn(true);
+        Mockito.when(certificateDao.delete(1)).thenAnswer((invocation)-> {
+            return (Long) invocation.getArgument(0) == 1;
+        });
+
+        //When
+        boolean result = certificateService.delete(2);
+
+        //Then
+        assertFalse(result);
+        verify(certificateTagDao,times(1)).deleteByCertificateId(anyLong());
+        verify(certificateDao, times(1)).delete(2);
+    }
+
+    @Test
+    public void find_CorrectCertificateId_ShouldReturnCertificate() {
+        //Given
         Certificate certificate = new Certificate(1, "name", "description",
                 new BigDecimal("12.6"), LocalDateTime.now(), null, 12);
         Tag tagOne = new Tag(1, "tagOne");
@@ -147,90 +205,66 @@ public class CertificateServiceTest {
                 new BigDecimal("12.6"), LocalDateTime.now(), null, 12, tagsInDto);
         Mockito.when(modelMapper.map(certificate, CertificateDto.class)).thenReturn(expected);
 
+        //When
         CertificateDto result = certificateService.find(1).get();
 
+        //Then
         assertEquals(expected, result);
         verify(certificateDao, times(1)).find(1);
     }
 
+    @Test
+    public void find_NonexistentCertificateId_ShouldReturnEmptyOptional() {
+        //Given
+        Mockito.when(certificateDao.find(1)).thenReturn(Optional.empty());
+
+        //When
+        Optional<CertificateDto> result = certificateService.find(1);
+
+        //Then
+        assertFalse(result.isPresent());
+        verify(certificateDao, times(1)).find(1);
+    }
+
     @Test()
-    public void findCertificatesTest() {
+    public void findCertificates_TagNameAndDescription_ShouldReturnCertificatesList() {
+        //Given
         Certificate certificate = new Certificate(1, "name", "description",
                 new BigDecimal("12.6"), LocalDateTime.now(), null, 12);
         Mockito.when(certificateDao.findCertificates(anyString(), any(MapSqlParameterSource.class)))
                 .thenReturn(Collections.singletonList(certificate));
+        Mockito.when(tagDao.findByCertificateId(1)).thenReturn(Collections.emptyList());
+        List<CertificateDto> expected = Stream.of(certificate)
+                .map(item -> modelMapper.map(item, CertificateDto.class))
+                .collect(Collectors.toList());
 
-        certificateService.findCertificates("tagName", "descriptionPart",null);
+        //When
+        List<CertificateDto> result =  certificateService.findCertificates("tagName",
+                "descriptionPart",null);
 
+        //Then
+        assertEquals(expected, result);
         verify(certificateDao,times(1)).findCertificates(anyString(),
                 any(MapSqlParameterSource.class));
     }
 
     @Test(expected = ResponseStatusException.class)
-    public void findCertificateWithInvalidOrderByPartTest() {
-        certificateService.findCertificates("tagName",null, "invalid");
+    public void findCertificates_InvalidOrderByParameter_ShouldThrowException() {
+        certificateService.findCertificates(null, null, "Invalid");
     }
 
     @Test
-    public void addCertificateTagsTest() {
-        List<Tag> tagsInDB = Collections.emptyList();
-        List<String> tagsForSave = Arrays.asList("tagOne", "tagTwo");
-        Mockito.when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
-        Mockito.when(tagDao.create(any(Tag.class))).thenAnswer(invocation -> {
-            Tag tag = invocation.getArgument(0);
-            tag.setId(4);
-            return tag;
-        });
-        Mockito.when(certificateTagDao.create(anyLong(), anyLong())).thenReturn(true);
-
-        certificateService.addCertificateTags(tagsForSave, anyLong());
-
-        verify(tagDao,times(2)).create(any(Tag.class));
-        verify(tagDao,times(2)).findByName(anyString());
-        verify(certificateTagDao,times(2)).create(anyLong(),anyLong());
-    }
-
-    @Test
-    public void updateCertificatesTest() {
-        Tag tagOne = new Tag(1, "tagOne");
-        Tag tagTwo = new Tag(2, "tagTwo");
-        List<Tag> tagsInDB = Arrays.asList(tagOne, tagTwo);
-        List<String> tagsForUpdate = Arrays.asList("tagOne", "tagThree");
-        Mockito.when(tagDao.create(any(Tag.class))).thenAnswer(invocation -> {
-            Tag tag = invocation.getArgument(0);
-            tag.setId(3);
-            return tag;
-        });
-        Mockito.when(tagDao.findByCertificateId(1)).thenReturn(tagsInDB);
-        Mockito.when(certificateTagDao.create(anyLong(), anyLong())).thenReturn(true);
-        Mockito.when(certificateTagDao.delete(anyLong(), anyLong())).thenReturn(true);
-        Mockito.when(tagDao.findByName(anyString())).thenAnswer(invocation -> {
-            String tagName = invocation.getArgument(0);
-            return tagsInDB.stream()
-                    .filter(tag -> tag.getName().equals(tagName))
-                    .findFirst();
-        });
-
-        certificateService.updateCertificateTags(tagsForUpdate, 1);
-
-        verify(tagDao, times(1)).findByCertificateId(1);
-        verify(certificateTagDao, times(1)).delete(1,2);
-        verify(tagDao,times(1)).findByName("tagThree");
-        verify(tagDao, times(1)).create(any(Tag.class));
-        verify(certificateTagDao, times(1)).create(1,3);
-    }
-
-    @Test
-    public void addCertificateTagTest() {
+    public void addCertificateTag_NewTag_ShouldEndWithoutException() {
+        //Given
         Tag tagOne = new Tag(1, "tagOne");
         Mockito.when(tagDao.findByName("tagOne")).thenReturn(Optional.of(tagOne));
         Mockito.when(certificateTagDao.create(anyLong(), anyLong())).thenReturn(true);
 
+        //When
         certificateService.addCertificateTag(tagOne,1);
 
+        //Then
         verify(tagDao, times(1)).findByName("tagOne");
         verify(certificateTagDao, times(1)).create(anyLong(), anyLong());
     }
-
-
 }
