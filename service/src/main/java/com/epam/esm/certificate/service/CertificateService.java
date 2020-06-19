@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Transactional
 public class CertificateService {
 
     private final CertificateDao certificateDao;
@@ -44,6 +43,7 @@ public class CertificateService {
         this.certificateTagDao = certificateTagDao;
     }
 
+    @Transactional
     public void create(CertificateDto certificateDto) {
         Certificate certificate = modelMapper.map(certificateDto, Certificate.class);
         try {
@@ -58,6 +58,7 @@ public class CertificateService {
         addCertificateTags(tags, certificate.getId());
     }
 
+    @Transactional
     public void update(CertificateDto certificateDto) {
         Certificate certificate = modelMapper.map(certificateDto, Certificate.class);
         long certificateId = certificate.getId();
@@ -76,6 +77,7 @@ public class CertificateService {
         updateCertificateTags(tags, certificateId);
     }
 
+    @Transactional
     public boolean delete(long id) {
         certificateTagDao.deleteByCertificateId(id);
         return certificateDao.delete(id);
@@ -134,6 +136,7 @@ public class CertificateService {
         addCertificateTags(tagsToAdd, certificateId);
     }
 
+    @Transactional
     public void addCertificateTag(Tag tag, long certificateId) {
         Tag tagToAdd = tagDao.findByName(tag.getName()).orElseGet(() ->
                 tagDao.create(tag)
