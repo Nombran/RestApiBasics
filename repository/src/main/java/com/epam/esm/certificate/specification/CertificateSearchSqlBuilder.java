@@ -2,24 +2,17 @@ package com.epam.esm.certificate.specification;
 import java.util.stream.Stream;
 
 public class CertificateSearchSqlBuilder {
-
     private final String tagName;
-
     private final String descriptionPart;
-
     private final String orderBy;
-
-    private final String  SQL_FIND_ALL = "select * from certificate";
-
-    private final String SQL_SELECT_JOINS = " inner join certificate_tag on certificate.id" +
-            " = certificate_tag.certificate_id inner join tag t on certificate_tag.tag_id" +
+    private static final String  SQL_FIND_ALL = "select distinct certificate.id, certificate.name, description, price," +
+            " creation_date, modification_date, duration from certificate";
+    private static final String SQL_SELECT_JOINS = " left join certificate_tag on certificate.id" +
+            " = certificate_tag.certificate_id left join tag t on certificate_tag.tag_id" +
             " = t.id where ";
-
-    private final String SQL_TAG_NAME_PART = "t.name = (:tag_name) ";
-
-    private final String SQL_DESCRIPTION_PART = " description like (:description) ";
-
-    private final String SQL_ORDER_BY_PART = " order by ";
+    private static final String SQL_TAG_NAME_PART = "t.name = (:tag_name) ";
+    private static final String SQL_DESCRIPTION_PART = " description like (:description) ";
+    private static final String SQL_ORDER_BY_PART = " order by ";
 
     public CertificateSearchSqlBuilder(String tagName, String descriptionPart,
                                        String orderBy) {

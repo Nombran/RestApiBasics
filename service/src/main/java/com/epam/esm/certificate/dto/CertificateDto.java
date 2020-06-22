@@ -26,32 +26,25 @@ import java.util.List;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class CertificateDto {
-
     private long id;
-
     @NonNull
     @NotBlank
     private String name;
-
     @NonNull
     @NotBlank
     private String description;
-
     @NonNull
     @DecimalMin(value = "0.0")
     @NotNull
     private BigDecimal price;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime creationDate;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime modificationDate;
-
     @NonNull
     @Min(1)
     private int duration;
-
     @NonNull
+    @NotNull
     private List<String> tags;
 }

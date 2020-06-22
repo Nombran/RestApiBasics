@@ -14,13 +14,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class CustomErrorResponse {
-
     private String error;
-
     private String message;
-
     private int status;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime timestamp;
 }

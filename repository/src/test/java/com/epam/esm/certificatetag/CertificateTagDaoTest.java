@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -17,11 +16,8 @@ import static org.junit.Assert.assertFalse;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 public class CertificateTagDaoTest {
-
     TagDao tagDao;
-
     CertificateTagDao certificateTagDao;
-
     EmbeddedDatabase embeddedDatabase;
 
     @Before
@@ -39,7 +35,7 @@ public class CertificateTagDaoTest {
     }
 
     @Test
-    public void create_ExistentTagIdAndCertificateId_ShouldReturnNonEmptyList() {
+    public void create_existentTagIdAndCertificateId_shouldReturnNonEmptyList() {
         //Given
         int sizeBeforeCreate = tagDao.findByCertificateId(3).size();
 
@@ -53,7 +49,7 @@ public class CertificateTagDaoTest {
     }
 
     @Test
-    public void delete_ExistentCertificateIdAndTagId_ShouldDeleteFromDB() {
+    public void delete_existentCertificateIdAndTagId_shouldDeleteFromDB() {
         //When
         certificateTagDao.delete(1,1);
 
@@ -63,7 +59,7 @@ public class CertificateTagDaoTest {
     }
 
     @Test
-    public void deleteByCertificateId_CertificateId_FindByCertificateShouldBeEmpty() {
+    public void deleteByCertificateId_certificateId_findByCertificateShouldBeEmpty() {
         //When
         certificateTagDao.deleteByCertificateId(1);
 

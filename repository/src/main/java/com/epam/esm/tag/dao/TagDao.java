@@ -20,22 +20,19 @@ import java.util.Optional;
 @Slf4j
 @Repository
 public class TagDao {
-
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    private final String SQL_FIND = "select id, name from tag where id = ?";
-    private final String SQL_INSERT = "insert into tag (name) values (:name)";
-    private final String SQL_FIND_ALL = "select id, name from tag";
-    private final String SQL_DELETE = "delete from tag where id = ?";
-    private final String SQL_FIND_BY_CERTIFICATE_ID = "select id, name from tag inner" +
+    private static final String SQL_FIND = "select id, name from tag where id = ?";
+    private static final String SQL_INSERT = "insert into tag (name) values (:name)";
+    private static final String SQL_FIND_ALL = "select id, name from tag";
+    private static final String SQL_DELETE = "delete from tag where id = ?";
+    private static final String SQL_FIND_BY_CERTIFICATE_ID = "select id, name from tag inner" +
             " join certificate_tag on tag.id = certificate_tag.tag_id where " +
             "certificate_tag.certificate_id = ?";
-    private final String SQL_FIND_BY_NAME = "select id, name from tag where name = ?";
-    private final String SQL_FIND_BY_ID_AND_CERTIFICATE_ID = "select id, name from tag " +
+    private static final String SQL_FIND_BY_NAME = "select id, name from tag where name = ?";
+    private static final String SQL_FIND_BY_ID_AND_CERTIFICATE_ID = "select id, name from tag " +
             "inner join certificate_tag on tag.id = certificate_tag.tag_id " +
             "where tag.id = ? and certificate_tag.certificate_id = ?";
-
 
     public TagDao(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -63,7 +60,7 @@ public class TagDao {
             return Optional.ofNullable(tag);
         }
         catch(EmptyResultDataAccessException e) {
-            log.info("Tag with id " + id + " doesn't exist");
+            log.error("Tag with id " + id + " doesn't exist");
             return Optional.empty();
         }
     }
@@ -84,7 +81,7 @@ public class TagDao {
         return Optional.ofNullable(tag);
         }
         catch(EmptyResultDataAccessException e) {
-            log.info("Tag with name " + name + " doesn't exist");
+            log.error("Tag with name " + name + " doesn't exist");
             return Optional.empty();
         }
     }
@@ -97,7 +94,7 @@ public class TagDao {
             return Optional.ofNullable(tag);
         }
         catch(EmptyResultDataAccessException e) {
-            log.info("Tag with id " + id + "which connected with certificate with id "
+            log.error("Tag with id " + id + "which connected with certificate with id "
                     + certificateId + " not found");
             return Optional.empty();
         }

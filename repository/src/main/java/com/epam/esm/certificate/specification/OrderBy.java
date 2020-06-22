@@ -8,7 +8,8 @@ public enum OrderBy {
     MODIFICATION_DATE("modification_date"),
     NAME("name"),
     DESCRIPTION("description"),
-    PRICE("price");
+    PRICE("price"),
+    DURATION("duration");
 
     private final String orderByFieldName;
 

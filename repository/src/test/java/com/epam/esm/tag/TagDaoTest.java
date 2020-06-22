@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,11 +16,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
-
 public class TagDaoTest {
-
     TagDao tagDao;
-
     EmbeddedDatabase embeddedDatabase;
 
     @Before
@@ -37,9 +33,8 @@ public class TagDaoTest {
         tagDao = new TagDao(embeddedDatabase);
     }
 
-
     @Test
-    public void create_NonexistentTag_ShouldReturnCreatedTag() {
+    public void create_nonexistentTag_shouldReturnCreatedTag() {
         //Given
         String expected = "tag for test";
         Tag tag = new Tag(expected);
@@ -53,7 +48,7 @@ public class TagDaoTest {
     }
 
     @Test
-    public void delete_ExistentTagId_ShouldReturnTrue() {
+    public void delete_existentTagId_shouldReturnTrue() {
         //Given
         int expected = 4;
 
@@ -66,7 +61,7 @@ public class TagDaoTest {
     }
 
     @Test
-    public void find_ExistentTagId_ShouldReturnNonNullTag() {
+    public void find_existentTagId_shouldReturnNonNullTag() {
         //Given
         Tag expected = new Tag(1, "tag one");
 
@@ -78,7 +73,7 @@ public class TagDaoTest {
     }
 
     @Test
-    public void findAll_ShouldReturnNonEmptyList() {
+    public void findAll_shouldReturnNonEmptyList() {
         //Given
         int expectedSize = 5;
 
@@ -90,7 +85,7 @@ public class TagDaoTest {
     }
 
     @Test
-    public void findByName_NameOfExistentTag_ShouldReturnNonNullTag() {
+    public void findByName_nameOfExistentTag_shouldReturnNonNullTag() {
         //Given
         Tag expected = new Tag(1, "tag one");
 
@@ -102,7 +97,7 @@ public class TagDaoTest {
     }
 
     @Test
-    public void findByCertificateId_ExistentCertificateId_ShouldReturnNonEmptyList() {
+    public void findByCertificateId_existentCertificateId_shouldReturnNonEmptyList() {
         //Given
         Tag tagOne = new Tag(3, "tag three");
         Tag tagTwo = new Tag(4, "fourth tag");
@@ -116,7 +111,7 @@ public class TagDaoTest {
     }
 
     @Test
-    public void findByNameAndCertificateId_ExistentTagNameAndCertificateId_ShouldReturnNonNullTag() {
+    public void findByNameAndCertificateId_existentTagNameAndCertificateId_shouldReturnNonNullTag() {
         //Given
         Tag expected = new Tag(1, "tag one");
 

@@ -15,9 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class CertificateDtoMapper{
-
     private final ModelMapper mapper;
-
     private final TagDao tagDao;
 
     @Autowired

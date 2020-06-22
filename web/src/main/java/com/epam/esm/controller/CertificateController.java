@@ -21,12 +21,24 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * Class CertificateController for Rest Api Basics Task.
+ *
+ * @author ARTSIOM BERASTSEN
+ * @version 1.0
+ */
 @RestController
-@RequestMapping(value = "/certificates")
+@RequestMapping(value = "/api/v1/certificates")
 public class CertificateController {
 
+    /**
+     * Field certificateService
+     */
     private final CertificateService certificateService;
 
+    /**
+     * Field tagService
+     */
     private final TagService tagService;
 
     @Autowired
@@ -36,6 +48,13 @@ public class CertificateController {
         this.tagService = tagService;
     }
 
+    /**
+     *
+     * @param tagName
+     * @param descriptionPart
+     * @param orderBy
+     * @return
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CertificateDto> findCertificates(@RequestParam(name = "tagName", required = false)
@@ -56,14 +75,14 @@ public class CertificateController {
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody CertificateDto certificate, @PathVariable(name = "id") long id) {
+    public void update(@Valid @RequestBody CertificateDto certificate, @PathVariable("id") long id) {
         certificate.setId(id);
         certificateService.update(certificate);
     }
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(name = "id") long id) {
+    public void delete(@PathVariable("id") long id) {
         if (!certificateService.delete(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Certificate with id = " + id + " doesn't exist");
@@ -72,7 +91,7 @@ public class CertificateController {
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDto findById(@PathVariable(name = "id") long id) {
+    public CertificateDto findById(@PathVariable("id") long id) {
         return certificateService.find(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "There is no certificate with id " + id)
@@ -80,20 +99,20 @@ public class CertificateController {
     }
 
     @GetMapping(value = "/{id}/tags")
-    public List<Tag> findAllCertificateTags(@PathVariable(name = "id") long id) {
+    public List<Tag> findAllCertificateTags(@PathVariable("id") long id) {
         return tagService.findTagsByCertificateId(id);
     }
 
     @PostMapping(value = "/{id}/tags")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addTag(@PathVariable(name = "id")long certificateId, @RequestBody Tag tag) {
+    public void addTag(@PathVariable("id")long certificateId, @RequestBody Tag tag) {
             certificateService.addCertificateTag(tag, certificateId);
     }
 
     @DeleteMapping(value = "/{id}/tags/{tagId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteCertificateTag(@PathVariable(name = "id") long certificateId,
-                                     @PathVariable(name = "tagId") long tagId) {
+    public void deleteCertificateTag(@PathVariable("id") long certificateId,
+                                     @PathVariable("tagId") long tagId) {
         certificateService.deleteCertificateTag(certificateId, tagId);
     }
 }

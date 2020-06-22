@@ -14,16 +14,12 @@ import javax.sql.DataSource;
 @ComponentScan("com.epam.esm")
 @PropertySource("classpath:application.properties")
 public class DataSourceConfig {
-
     @Value("${dataSource.driver}")
     private String driverClassName;
-
     @Value("${dataSource.url}")
     private String databaseUrl;
-
     @Value("${dataSource.username}")
     private String databaseUsername;
-
     @Value("${dataSource.password}")
     private String databaseUserPassword;
 

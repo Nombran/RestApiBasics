@@ -3,7 +3,6 @@ package com.epam.esm.certificate.dao;
 import com.epam.esm.certificate.mapper.CertificateMapper;
 import com.epam.esm.certificate.model.Certificate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,21 +20,17 @@ import java.util.Optional;
 @Slf4j
 @Repository
 public class CertificateDao {
-
     private final JdbcTemplate jdbcTemplate;
-
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    private final String SQL_FIND = "select id, name, description, price," +
+    private final static String SQL_FIND = "select id, name, description, price," +
             " creation_date, modification_date, duration from certificate where id = ?";
-    private final String SQL_INSERT = "insert into certificate (name, description, price, creation_date," +
+    private final static String SQL_INSERT = "insert into certificate (name, description, price, creation_date," +
             " duration) values (:name, :description, :price, :creation_date, :duration)";
-    private final String SQL_FIND_ALL = "select id, name, description, price," +
+    private final static String SQL_FIND_ALL = "select id, name, description, price," +
             " creation_date, modification_date, duration from certificate";
-    private final String SQL_UPDATE = "update certificate set name = ?, description = ?, price  = ?," +
+    private final static String SQL_UPDATE = "update certificate set name = ?, description = ?, price  = ?," +
             "modification_date = ?, duration = ? where id = ?";
-    private final String SQL_DELETE = "delete from certificate where id = ?";
-
+    private final static String SQL_DELETE = "delete from certificate where id = ?";
 
     public CertificateDao(final DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
@@ -75,7 +70,7 @@ public class CertificateDao {
             return Optional.ofNullable(certificate);
         }
         catch(EmptyResultDataAccessException e) {
-            log.info("Certificate with id " + id + "doesn't exists");
+            log.error("Certificate with id " + id + "doesn't exists");
             return Optional.empty();
         }
     }
@@ -85,6 +80,7 @@ public class CertificateDao {
     }
 
     public List<Certificate> findCertificates(String query, MapSqlParameterSource parameters) {
+        System.out.println(query);
         return namedParameterJdbcTemplate.query(query, parameters, new CertificateMapper());
     }
 }

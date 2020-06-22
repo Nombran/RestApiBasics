@@ -18,22 +18,15 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode
 public class Certificate {
-
     private long id;
-
     @NonNull
     private String name;
-
     @NonNull
     private String description;
-
     @NonNull
     private BigDecimal price;
-
     private LocalDateTime creationDate;
-
     private LocalDateTime modificationDate;
-
     @NonNull
     private int duration;
 }

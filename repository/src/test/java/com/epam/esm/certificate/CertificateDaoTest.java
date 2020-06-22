@@ -18,9 +18,7 @@ import static org.junit.Assert.*;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 public class CertificateDaoTest {
-
     CertificateDao certificateDao;
-
     EmbeddedDatabase embeddedDatabase;
 
     @Before
@@ -37,7 +35,7 @@ public class CertificateDaoTest {
     }
 
     @Test
-    public void create_UniqueCertificate_ShouldReturnWithIdAndCreationDate() {
+    public void create_uniqueCertificate_shouldReturnWithIdAndCreationDate() {
         //Given
         Certificate certificate = new Certificate("name", "description",
                 new BigDecimal("12.6"), 12);
@@ -51,7 +49,7 @@ public class CertificateDaoTest {
     }
 
     @Test
-    public void update_ExistentCertificateWithUpdates_ShouldReturnTrue() {
+    public void update_existentCertificateWithUpdates_shouldReturnTrue() {
         //Given
         Certificate certificate = certificateDao.find(1).get();
         certificate.setName("new name");
@@ -69,7 +67,7 @@ public class CertificateDaoTest {
     }
 
     @Test
-    public void delete_ExistentCertificateId_ShouldReturnTrue() {
+    public void delete_existentCertificateId_shouldReturnTrue() {
         //Given
         int expectedSize = certificateDao.findAll().size() - 1;
 
@@ -83,13 +81,13 @@ public class CertificateDaoTest {
     }
 
     @Test(expected = DataIntegrityViolationException.class)
-    public void delete_CertificateWithTags_ShouldThrowException() {
+    public void delete_certificateWithTags_shouldThrowException() {
         //When
         certificateDao.delete(1);
     }
 
     @Test
-    public void find_ExistentCertificateId_ShouldReturnExpected() {
+    public void find_existentCertificateId_shouldReturnExpected() {
         //Given
         LocalDateTime expectedDateTime = LocalDateTime.of(2020, 6, 9, 0, 0);
         Certificate expected = new Certificate(1, "certificate one", "description",
@@ -104,7 +102,7 @@ public class CertificateDaoTest {
     }
 
     @Test
-    public void findAll_ShouldReturnNonEmptyList() {
+    public void findAll_shouldReturnNonEmptyList() {
         //Given
         int expectedListSize = 4;
 
@@ -117,7 +115,7 @@ public class CertificateDaoTest {
     }
 
     @Test
-    public void findCertificates_TagName_ShouldReturnOneTag() {
+    public void findCertificates_tagName_shouldReturnOneTag() {
         //Given
         String tagName = "fifth tag";
         String query = new CertificateSearchSqlBuilder("fifth tag", null,null).getSqlQuery();
@@ -135,6 +133,4 @@ public class CertificateDaoTest {
         assertEquals(expectedResultSize, result.size());
         assertEquals(expectedCertificate.getName(), result.get(0).getName());
     }
-
-
 }

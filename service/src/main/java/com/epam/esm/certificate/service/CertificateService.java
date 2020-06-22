@@ -24,13 +24,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class CertificateService {
-
     private final CertificateDao certificateDao;
-
     private final TagDao tagDao;
-
     private final CertificateTagDao certificateTagDao;
-
     private final ModelMapper modelMapper;
 
     public CertificateService(TagDao tagDao,
@@ -158,7 +154,7 @@ public class CertificateService {
     public void deleteCertificateTag(long certificateId, long tagId) {
         if (certificateDao.find(certificateId).isPresent()) {
             tagDao.findByIdAndCertificateId(tagId, certificateId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 "Certificate with id " + certificateId +
                                         " doesnt have tag with id " + tagId)
                     );

@@ -17,9 +17,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @EqualsAndHashCode
 public class Tag {
-
     private long id;
-
     @NonNull
     @NotBlank
     private String name;

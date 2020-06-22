@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-
 import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificate.model.Certificate;
 import com.epam.esm.tag.dao.TagDao;
@@ -23,13 +22,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class TagServiceTest {
-
     @InjectMocks
     TagService tagService;
-
     @Mock
     CertificateDao certificateDao;
-
     @Mock
     TagDao tagDao;
 
@@ -39,7 +35,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void create_CorrectTag_ShouldReturnTrue() {
+    public void create_correctTag_shouldReturnTrue() {
         //Given
         Tag tag = new Tag("Tag for test");
         Mockito.when(tagDao.create(tag)).thenReturn(tag);
@@ -53,7 +49,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void delete_CorrectCertificateId_ShouldReturnTrue() {
+    public void delete_correctCertificateId_shouldReturnTrue() {
         //Given
         long tagId = 1;
         Mockito.when(tagDao.delete(1)).thenReturn(true);
@@ -67,7 +63,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void find_ExistentTagId_ShouldReturnCorrectTag() {
+    public void find_existentTagId_shouldReturnCorrectTag() {
         //Given
         long tagId = 1;
         Tag tag = new Tag(1, "Tag for test");
@@ -82,7 +78,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void findAll_ShouldReturnAllTags() {
+    public void findAll_shouldReturnAllTags() {
         //Given
         Tag tagOne = new Tag(1, "tagOne");
         Tag tagTwo = new Tag(2, "tagTwo");
@@ -99,7 +95,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void findTagsByCertificateId_ExistentCertificateId_ShouldReturnNonEmptyList() {
+    public void findTagsByCertificateId_existentCertificateId_shouldReturnNonEmptyList() {
         //Given
         Tag tagOne = new Tag(1, "tagOne");
         Tag tagTwo = new Tag(2, "tagTwo");

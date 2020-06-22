@@ -3,11 +3,13 @@ package com.epam.esm.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalControllerExceptionHandler {
+
    @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<CustomErrorResponse> handleResponseStatusException(ResponseStatusException e) {
        CustomErrorResponse error = new CustomErrorResponse();
@@ -36,5 +39,26 @@ public class GlobalControllerExceptionHandler {
          errors.put(fieldName, errorMessage);
       });
       return errors;
+   }
+
+   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+   public ResponseEntity<CustomErrorResponse> handleRequestMethodNotSupportedResponse
+           (HttpRequestMethodNotSupportedException ex) {
+      CustomErrorResponse error = new CustomErrorResponse();
+      error.setTimestamp(LocalDateTime.now());
+      error.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+      error.setError(HttpStatus.METHOD_NOT_ALLOWED.toString());
+      error.setMessage(ex.getMessage());
+      return new ResponseEntity<>(error, HttpStatus.METHOD_NOT_ALLOWED);
+   }
+
+   @ExceptionHandler(NoHandlerFoundException.class)
+   public ResponseEntity<CustomErrorResponse> handleResourceNotFoundResponse(NoHandlerFoundException ex) {
+      CustomErrorResponse error = new CustomErrorResponse();
+      error.setTimestamp(LocalDateTime.now());
+      error.setStatus(HttpStatus.NOT_FOUND.value());
+      error.setError(HttpStatus.NOT_FOUND.toString());
+      error.setMessage(ex.getMessage());
+      return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
    }
 }

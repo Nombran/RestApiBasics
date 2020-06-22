@@ -34,19 +34,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CertificateServiceTest {
-
     @InjectMocks
     CertificateService certificateService;
-
     @Mock
     CertificateDao certificateDao;
-
     @Mock
     TagDao tagDao;
-
     @Mock
     CertificateTagDao certificateTagDao;
-
     @Spy
     ModelMapper modelMapper;
 
@@ -55,9 +50,8 @@ public class CertificateServiceTest {
         MockitoAnnotations.initMocks(this);
     }
 
-
     @Test
-    public void create_CertificateWithTags_ShouldEndWithoutException() {
+    public void create_certificateWithTags_shouldEndWithoutException() {
         //Given
         List<Certificate> certificatesDB = new ArrayList<>();
         Tag tagOne = new Tag(1, "tagOne");
@@ -90,7 +84,7 @@ public class CertificateServiceTest {
     }
 
     @Test(expected = ResponseStatusException.class)
-    public void create_CertificateWithDuplicateName_ShouldThrowException() {
+    public void create_certificateWithDuplicateName_shouldThrowException() {
         CertificateDto certificateDto = new CertificateDto("name", "description", new BigDecimal("12.6"),
                 5, Collections.emptyList());
         Mockito.when(certificateTagDao.create(anyLong(), anyLong())).thenReturn(true);
@@ -102,7 +96,7 @@ public class CertificateServiceTest {
     }
 
     @Test
-    public void update_CertificateWithUpdatedName_ShouldEndWithoutException() {
+    public void update_certificateWithUpdatedName_shouldEndWithoutException() {
         //Given
         Certificate certificateBeforeUpdate = new Certificate(1, "name", "description",
                 new BigDecimal("12.6"), LocalDateTime.now(), LocalDateTime.now().plusDays(1),
@@ -155,7 +149,7 @@ public class CertificateServiceTest {
     }
 
     @Test
-    public void delete_CertificateWithCorrectId_ShouldReturnTrue() {
+    public void delete_certificateWithCorrectId_shouldReturnTrue() {
         //Given
         Mockito.when(certificateTagDao.delete(anyLong(),anyLong())).thenReturn(true);
         Mockito.when(certificateDao.delete(1)).thenAnswer((invocation)-> {
@@ -172,7 +166,7 @@ public class CertificateServiceTest {
     }
 
     @Test
-    public void delete_CertificateWithNonexistentId_ShouldReturnFalse() {
+    public void delete_certificateWithNonexistentId_shouldReturnFalse() {
         //Given
         Mockito.when(certificateTagDao.delete(anyLong(),anyLong())).thenReturn(true);
         Mockito.when(certificateDao.delete(1)).thenAnswer((invocation)-> {
@@ -189,7 +183,7 @@ public class CertificateServiceTest {
     }
 
     @Test
-    public void find_CorrectCertificateId_ShouldReturnCertificate() {
+    public void find_correctCertificateId_shouldReturnCertificate() {
         //Given
         Certificate certificate = new Certificate(1, "name", "description",
                 new BigDecimal("12.6"), LocalDateTime.now(), null, 12);
@@ -214,7 +208,7 @@ public class CertificateServiceTest {
     }
 
     @Test
-    public void find_NonexistentCertificateId_ShouldReturnEmptyOptional() {
+    public void find_nonexistentCertificateId_shouldReturnEmptyOptional() {
         //Given
         Mockito.when(certificateDao.find(1)).thenReturn(Optional.empty());
 
@@ -227,7 +221,7 @@ public class CertificateServiceTest {
     }
 
     @Test()
-    public void findCertificates_TagNameAndDescription_ShouldReturnCertificatesList() {
+    public void findCertificates_tagNameAndDescription_shouldReturnCertificatesList() {
         //Given
         Certificate certificate = new Certificate(1, "name", "description",
                 new BigDecimal("12.6"), LocalDateTime.now(), null, 12);
@@ -249,12 +243,12 @@ public class CertificateServiceTest {
     }
 
     @Test(expected = ResponseStatusException.class)
-    public void findCertificates_InvalidOrderByParameter_ShouldThrowException() {
+    public void findCertificates_invalidOrderByParameter_shouldThrowException() {
         certificateService.findCertificates(null, null, "Invalid");
     }
 
     @Test
-    public void addCertificateTag_NewTag_ShouldEndWithoutException() {
+    public void addCertificateTag_newTag_shouldEndWithoutException() {
         //Given
         Tag tagOne = new Tag(1, "tagOne");
         Mockito.when(tagDao.findByName("tagOne")).thenReturn(Optional.of(tagOne));

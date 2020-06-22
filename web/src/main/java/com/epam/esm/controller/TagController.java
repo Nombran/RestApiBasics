@@ -18,9 +18,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/tags")
+@RequestMapping(value = "/api/v1/tags")
 public class TagController {
-
     private final TagService tagService;
 
     @Autowired
@@ -43,7 +42,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/{id}")
-    public Tag findById(@PathVariable(name = "id") long id) {
+    public Tag findById(@PathVariable("id") long id) {
         return tagService.find(id).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "There is no tag with id " + id)
@@ -52,7 +51,7 @@ public class TagController {
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable(name = "id") long id) {
+    public void delete(@PathVariable("id") long id) {
         if(!tagService.delete(id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Cannot delete tag with id" + id);
