@@ -2,20 +2,21 @@ package com.epam.esm.certificate.service;
 
 import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificate.dto.CertificateDto;
+import com.epam.esm.certificate.exception.CertificateNotFoundException;
 import com.epam.esm.certificate.model.Certificate;
 import com.epam.esm.certificate.specification.CertificateSearchSqlBuilder;
 import com.epam.esm.certificatetag.dao.CertificateTagDao;
+import com.epam.esm.exception.ServiceConflictException;
 import com.epam.esm.tag.dao.TagDao;
+import com.epam.esm.tag.exception.TagNotFoundException;
 import com.epam.esm.tag.model.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public class CertificateService {
         } catch (DuplicateKeyException e) {
             log.error("Certificate with name " + certificate.getName() +
                     " already exists");
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Certificate with name "
+            throw new ServiceConflictException("Certificate with name "
                     + certificate.getName() + " already exists");
         }
         List<String> tags = certificateDto.getTags();
@@ -60,13 +61,13 @@ public class CertificateService {
         long certificateId = certificate.getId();
         try {
             if(!certificateDao.update(certificate)) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate with id "
+                throw new CertificateNotFoundException("Certificate with id "
                         + certificate.getId() + " doesn't exist");
             }
         } catch (DuplicateKeyException e) {
             log.error("Certificate with name " + certificate.getName() +
                     " already exists");
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Certificate with name "
+            throw new ServiceConflictException("Certificate with name "
                     + certificate.getName() + " already exists");
         }
         List<String> tags = certificateDto.getTags();
@@ -74,22 +75,27 @@ public class CertificateService {
     }
 
     @Transactional
-    public boolean delete(long id) {
+    public void delete(long id) {
         certificateTagDao.deleteByCertificateId(id);
-        return certificateDao.delete(id);
+        if(!certificateDao.delete(id)) {
+            throw new CertificateNotFoundException("Certificate with id = " + id + " doesn't exist");
+        }
     }
 
-    public Optional<CertificateDto> find(long id) {
-        return certificateDao.find(id)
-                .map(certificate -> modelMapper.map(certificate, CertificateDto.class));
+    public CertificateDto find(long id) {
+        Optional<Certificate> certificate = certificateDao.find(id);
+        if(certificate.isPresent()) {
+            return modelMapper.map(certificate.get(), CertificateDto.class);
+        } else {
+            throw new CertificateNotFoundException("Certificate with id = " + id + " doesn't exist");
+        }
     }
 
     public List<CertificateDto> findCertificates(String tagName, String descriptionPart, String orderBy) {
         CertificateSearchSqlBuilder specification =
                 new CertificateSearchSqlBuilder(tagName, descriptionPart, orderBy);
         if(orderBy != null && !specification.checkOrderBy()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Invalid orderBy parameter");
+            throw new IllegalArgumentException("Invalid orderBy parameter");
         }
         String query = specification.getSqlQuery();
         MapSqlParameterSource parameters = new MapSqlParameterSource();
@@ -142,26 +148,25 @@ public class CertificateService {
         } catch (DuplicateKeyException e) {
             log.error("Certificate with id " + certificateId +
                     " already has tag " + tag.getName());
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "The certificate already has this tag");
+            throw new ServiceConflictException("The certificate already has this tag");
         } catch (DataIntegrityViolationException e) {
             log.error("Certificate with id " + certificateId + " doesn't exist");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "There is no certificate with id = " + certificateId);
+            throw new CertificateNotFoundException("Certificate with id "
+                    + certificateId + " doesn't exist");
         }
     }
 
     public void deleteCertificateTag(long certificateId, long tagId) {
         if (certificateDao.find(certificateId).isPresent()) {
             tagDao.findByIdAndCertificateId(tagId, certificateId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    .orElseThrow(() -> new TagNotFoundException(
                                 "Certificate with id " + certificateId +
                                         " doesnt have tag with id " + tagId)
                     );
             certificateTagDao.delete(certificateId, tagId);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "There is no certificate with id = " + certificateId);
+            throw new CertificateNotFoundException("Certificate with id "
+                    + certificateId + " doesn't exist");
         }
     }
 }

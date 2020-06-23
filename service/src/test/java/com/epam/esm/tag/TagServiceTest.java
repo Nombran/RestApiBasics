@@ -10,6 +10,7 @@ import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificate.model.Certificate;
 import com.epam.esm.tag.dao.TagDao;
 import com.epam.esm.tag.model.Tag;
+import com.epam.esm.tag.service.TagService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -35,31 +36,29 @@ public class TagServiceTest {
     }
 
     @Test
-    public void create_correctTag_shouldReturnTrue() {
+    public void create_correctTag_shouldEndWithoutException() {
         //Given
         Tag tag = new Tag("Tag for test");
         Mockito.when(tagDao.create(tag)).thenReturn(tag);
 
         //When
-        boolean result = tagService.create(tag);
+        tagService.create(tag);
 
         //Then
-        assertTrue(result);
         verify(tagDao, times(1)).create(tag);
     }
 
     @Test
-    public void delete_correctCertificateId_shouldReturnTrue() {
+    public void delete_correctCertificateId_shouldEndWithoutException() {
         //Given
         long tagId = 1;
         Mockito.when(tagDao.delete(1)).thenReturn(true);
 
         //When
-        boolean result = tagService.delete(tagId);
+        tagService.delete(tagId);
 
         //Then
         verify(tagDao, times(1)).delete(tagId);
-        assertTrue(result);
     }
 
     @Test
@@ -70,11 +69,11 @@ public class TagServiceTest {
         Mockito.when(tagDao.find(1)).thenReturn(Optional.of(tag));
 
         //When
-        Optional<Tag> result = tagService.find(tagId);
+        Tag result = tagService.find(tagId);
 
         //Then
         verify(tagDao, times(1)).find(tagId);
-        assertEquals(tag, result.get());
+        assertEquals(tag, result);
     }
 
     @Test

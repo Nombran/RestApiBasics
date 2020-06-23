@@ -1,5 +1,5 @@
 INSERT INTO tag (id, name)
-VALUES (1,'tag one'),(2,'tag two'),(3,'tag three'),(4,'fourth tag'),(5,'fifth tag');
+VALUES (1,'tag one'),(2,'tag two'),(3,'tag three'),(4,'fourth tag'),(5,'fifth tag'),(6,'tag six');
 
 INSERT INTO certificate (name, description, price, creation_date, modification_date, duration)
 VALUES ('certificate one', 'description', 12.5, '2020-06-09 00:00', null, 5),

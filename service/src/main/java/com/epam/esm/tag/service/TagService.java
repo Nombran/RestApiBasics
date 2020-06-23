@@ -1,14 +1,14 @@
-package com.epam.esm.tag;
+package com.epam.esm.tag.service;
 
 import com.epam.esm.certificate.dao.CertificateDao;
+import com.epam.esm.exception.ServiceConflictException;
 import com.epam.esm.tag.dao.TagDao;
+import com.epam.esm.tag.exception.TagNotFoundException;
 import com.epam.esm.tag.model.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,27 +26,33 @@ public class TagService {
 
     }
 
-    public boolean create(Tag tag) {
+    public void create(Tag tag) {
         try {
-            return tagDao.create(tag) != null;
+            tagDao.create(tag);
         } catch (DuplicateKeyException e) {
             log.error("Tag with name " + tag.getName() + "already exists");
-            return false;
+            throw new ServiceConflictException("Tag with name " + tag.getName() + " already exists");
         }
     }
 
-    public boolean delete(long id) {
+    public void delete(long id) {
         try {
-            return tagDao.delete(id);
+            tagDao.delete(id);
         } catch (DataIntegrityViolationException e) {
             log.error("Cannot delete tag with id " + id +
                     " because of relationships with some certificate");
-            return false;
+            throw new ServiceConflictException("Cannot delete tag with id " + id +
+                    " because of relationships with some certificate");
         }
     }
 
-    public Optional<Tag> find(long id) {
-        return tagDao.find(id);
+    public Tag find(long id) {
+        Optional<Tag> tag = tagDao.find(id);
+        if(tag.isPresent()) {
+            return tag.get();
+        } else {
+            throw new TagNotFoundException("Tag with id = " + id + "doesn't exist");
+        }
     }
 
     public List<Tag> findAll() {
@@ -57,8 +63,7 @@ public class TagService {
         if(certificateDao.find(id).isPresent()) {
             return tagDao.findByCertificateId(id);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "There is no certificate with id = " + id);
+            throw new TagNotFoundException("There is no certificate with id = " + id);
         }
     }
 }

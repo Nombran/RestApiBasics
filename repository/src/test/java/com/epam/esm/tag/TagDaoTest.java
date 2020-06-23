@@ -50,14 +50,16 @@ public class TagDaoTest {
     @Test
     public void delete_existentTagId_shouldReturnTrue() {
         //Given
-        int expected = 4;
+        int expected = 5;
 
         //When
-        boolean result = tagDao.delete(1);
+        boolean result = tagDao.delete(6);
 
         //Then
+        int tagNumber = tagDao.findAll().size();
         assertTrue(result);
-        assertFalse(tagDao.find(1).isPresent());
+        assertEquals(expected, tagNumber);
+        assertFalse(tagDao.find(6).isPresent());
     }
 
     @Test
@@ -75,7 +77,7 @@ public class TagDaoTest {
     @Test
     public void findAll_shouldReturnNonEmptyList() {
         //Given
-        int expectedSize = 5;
+        int expectedSize = 6;
 
         //When
         List<Tag> result = tagDao.findAll();

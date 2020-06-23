@@ -10,10 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,12 +26,15 @@ public class CertificateDto {
     private long id;
     @NonNull
     @NotBlank
+    @Size(min = 5, max = 50)
     private String name;
     @NonNull
     @NotBlank
+    @Size(min = 5, max = 50)
     private String description;
     @NonNull
     @DecimalMin(value = "0.0")
+    @DecimalMax(value = "20000.0")
     @NotNull
     private BigDecimal price;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
@@ -43,6 +43,7 @@ public class CertificateDto {
     private LocalDateTime modificationDate;
     @NonNull
     @Min(1)
+    @Max(100)
     private int duration;
     @NonNull
     @NotNull

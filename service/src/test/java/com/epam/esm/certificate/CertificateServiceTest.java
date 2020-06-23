@@ -8,10 +8,13 @@ import static org.mockito.Mockito.*;
 
 import com.epam.esm.certificate.dao.CertificateDao;
 import com.epam.esm.certificate.dto.CertificateDto;
+import com.epam.esm.certificate.exception.CertificateNotFoundException;
 import com.epam.esm.certificate.model.Certificate;
 import com.epam.esm.certificate.service.CertificateService;
 import com.epam.esm.certificatetag.dao.CertificateTagDao;
+import com.epam.esm.exception.ServiceConflictException;
 import com.epam.esm.tag.dao.TagDao;
+import com.epam.esm.tag.exception.TagNotFoundException;
 import com.epam.esm.tag.model.Tag;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +27,6 @@ import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -83,7 +85,7 @@ public class CertificateServiceTest {
         verify(certificateTagDao, times(2)).create(anyLong(), anyLong());
     }
 
-    @Test(expected = ResponseStatusException.class)
+    @Test(expected = ServiceConflictException.class)
     public void create_certificateWithDuplicateName_shouldThrowException() {
         CertificateDto certificateDto = new CertificateDto("name", "description", new BigDecimal("12.6"),
                 5, Collections.emptyList());
@@ -149,7 +151,7 @@ public class CertificateServiceTest {
     }
 
     @Test
-    public void delete_certificateWithCorrectId_shouldReturnTrue() {
+    public void delete_certificateWithCorrectId_shouldEndWithoutException() {
         //Given
         Mockito.when(certificateTagDao.delete(anyLong(),anyLong())).thenReturn(true);
         Mockito.when(certificateDao.delete(1)).thenAnswer((invocation)-> {
@@ -157,16 +159,15 @@ public class CertificateServiceTest {
         });
 
         //When
-        boolean result = certificateService.delete(1);
+        certificateService.delete(1);
 
         //Then
-        assertTrue(result);
         verify(certificateTagDao,times(1)).deleteByCertificateId(anyLong());
         verify(certificateDao, times(1)).delete(1);
     }
 
-    @Test
-    public void delete_certificateWithNonexistentId_shouldReturnFalse() {
+    @Test(expected = CertificateNotFoundException.class)
+    public void delete_certificateWithNonexistentId_shouldEndWithException() {
         //Given
         Mockito.when(certificateTagDao.delete(anyLong(),anyLong())).thenReturn(true);
         Mockito.when(certificateDao.delete(1)).thenAnswer((invocation)-> {
@@ -174,10 +175,9 @@ public class CertificateServiceTest {
         });
 
         //When
-        boolean result = certificateService.delete(2);
+        certificateService.delete(2);
 
         //Then
-        assertFalse(result);
         verify(certificateTagDao,times(1)).deleteByCertificateId(anyLong());
         verify(certificateDao, times(1)).delete(2);
     }
@@ -200,23 +200,22 @@ public class CertificateServiceTest {
         Mockito.when(modelMapper.map(certificate, CertificateDto.class)).thenReturn(expected);
 
         //When
-        CertificateDto result = certificateService.find(1).get();
+        CertificateDto result = certificateService.find(1);
 
         //Then
         assertEquals(expected, result);
         verify(certificateDao, times(1)).find(1);
     }
 
-    @Test
-    public void find_nonexistentCertificateId_shouldReturnEmptyOptional() {
+    @Test(expected = CertificateNotFoundException.class)
+    public void find_nonexistentCertificateId_shouldEndWithException() {
         //Given
         Mockito.when(certificateDao.find(1)).thenReturn(Optional.empty());
 
         //When
-        Optional<CertificateDto> result = certificateService.find(1);
+        CertificateDto result = certificateService.find(1);
 
         //Then
-        assertFalse(result.isPresent());
         verify(certificateDao, times(1)).find(1);
     }
 
@@ -242,7 +241,7 @@ public class CertificateServiceTest {
                 any(MapSqlParameterSource.class));
     }
 
-    @Test(expected = ResponseStatusException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void findCertificates_invalidOrderByParameter_shouldThrowException() {
         certificateService.findCertificates(null, null, "Invalid");
     }

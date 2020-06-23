@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.certificate.dto.CertificateDto;
 import com.epam.esm.certificate.service.CertificateService;
-import com.epam.esm.tag.TagService;
+import com.epam.esm.tag.service.TagService;
 import com.epam.esm.tag.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -49,7 +48,6 @@ public class CertificateController {
     }
 
     /**
-     *
      * @param tagName
      * @param descriptionPart
      * @param orderBy
@@ -58,12 +56,12 @@ public class CertificateController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CertificateDto> findCertificates(@RequestParam(name = "tagName", required = false)
-                                        String tagName,
-                                        @RequestParam(name = "descriptionPart", required = false)
-                                        String descriptionPart,
-                                        @RequestParam(name = "orderBy", required = false)
-                                        String orderBy
-                                        ) {
+                                                         String tagName,
+                                                 @RequestParam(name = "descriptionPart", required = false)
+                                                         String descriptionPart,
+                                                 @RequestParam(name = "orderBy", required = false)
+                                                         String orderBy
+    ) {
         return certificateService.findCertificates(tagName, descriptionPart, orderBy);
     }
 
@@ -83,19 +81,13 @@ public class CertificateController {
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") long id) {
-        if (!certificateService.delete(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Certificate with id = " + id + " doesn't exist");
-        }
+        certificateService.delete(id);
     }
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto findById(@PathVariable("id") long id) {
-        return certificateService.find(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "There is no certificate with id " + id)
-        );
+        return certificateService.find(id);
     }
 
     @GetMapping(value = "/{id}/tags")
@@ -105,8 +97,8 @@ public class CertificateController {
 
     @PostMapping(value = "/{id}/tags")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addTag(@PathVariable("id")long certificateId, @RequestBody Tag tag) {
-            certificateService.addCertificateTag(tag, certificateId);
+    public void addTag(@PathVariable("id") long certificateId, @RequestBody Tag tag) {
+        certificateService.addCertificateTag(tag, certificateId);
     }
 
     @DeleteMapping(value = "/{id}/tags/{tagId}")
