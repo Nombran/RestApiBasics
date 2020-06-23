@@ -5,20 +5,12 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.modelmapper.config.Configuration.AccessLevel.PRIVATE;
 
 @Configuration
-@ComponentScan({ "com.epam.esm.**" })
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-public class SpringConfig {
-
-    @Bean
-    public javax.validation.Validator localValidatorFactoryBean() {
-        return new LocalValidatorFactoryBean();
-    }
+@ComponentScan("com.epam.esm.**")
+public class ServiceSpringConfig {
 
     @Bean
     public ModelMapper modelMapper() {
