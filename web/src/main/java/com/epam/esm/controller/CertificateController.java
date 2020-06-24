@@ -6,6 +6,7 @@ import com.epam.esm.tag.service.TagService;
 import com.epam.esm.tag.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -26,18 +28,21 @@ import java.util.List;
  * @author ARTSIOM BERASTSEN
  * @version 1.0
  */
+@Validated
 @RestController
 @RequestMapping(value = "/api/v1/certificates")
 public class CertificateController {
 
     /**
      * Field certificateService
+     *
      * @see CertificateService
      */
     private final CertificateService certificateService;
 
     /**
      * Field tagService
+     *
      * @see TagService
      */
     private final TagService tagService;
@@ -52,15 +57,15 @@ public class CertificateController {
     /**
      * GET method findCertificates, that returns List of CertificateDto objects, which match <br>
      * to all request params.<br>
-     *<p>
+     * <p>
      * [GET /api/v1/certificates/]<br>
      * Request (application/json).<br>
      * Response 200 (application/json).
-     *</p>
+     * </p>
      *
-     * @param tagName represents tag's name, connected with certificate
+     * @param tagName         represents tag's name, connected with certificate
      * @param descriptionPart represents part of full certificate's description
-     * @param orderBy represents field name for ordering by
+     * @param orderBy         represents field name for ordering by
      * @return list of certificatesDto objects, which match to all request params
      * @see CertificateDto
      * @see com.epam.esm.certificate.model.Certificate
@@ -74,8 +79,10 @@ public class CertificateController {
                                                  @RequestParam(name = "orderBy", required = false, defaultValue = "id")
                                                          String orderBy,
                                                  @RequestParam(name = "page", required = false, defaultValue = "1")
+                                                 @Min(value = 1, message = "page number must be greater or equal to 1")
                                                          Integer page,
                                                  @RequestParam(name = "perPage", required = false, defaultValue = "50")
+                                                 @Min(value = 1, message = "perPage param must be greater or equal to 1")
                                                          Integer perPage
     ) {
         return certificateService.findCertificates(tagName, descriptionPart, orderBy, page, perPage);
@@ -91,7 +98,7 @@ public class CertificateController {
      * </p>
      *
      * @param certificate represents dto object, which contain certificate<br>
-     * information and list of it's tags.
+     *                    information and list of it's tags.
      * @see CertificateDto
      */
     @PostMapping
@@ -110,8 +117,8 @@ public class CertificateController {
      * </p>
      *
      * @param certificate represents dto object, which contain certificate<br>
-     * information and list of it's tags.
-     * @param id represents id of the certificate.
+     *                    information and list of it's tags.
+     * @param id          represents id of the certificate.
      * @see CertificateDto
      */
     @PutMapping(value = "/{id}")
@@ -185,7 +192,7 @@ public class CertificateController {
      * </p>
      *
      * @param certificateId represents id of the certificate.
-     * @param tag represents tag object.
+     * @param tag           represents tag object.
      * @see Tag
      */
     @PostMapping(value = "/{id}/tags")
@@ -203,7 +210,7 @@ public class CertificateController {
      * </p>
      *
      * @param certificateId represents id of the certificate.
-     * @param tagId represents id of the tag.
+     * @param tagId         represents id of the tag.
      * @see com.epam.esm.certificate.model.Certificate
      * @see Tag
      */
