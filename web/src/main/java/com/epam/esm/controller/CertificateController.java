@@ -71,10 +71,14 @@ public class CertificateController {
                                                          String tagName,
                                                  @RequestParam(name = "descriptionPart", required = false)
                                                          String descriptionPart,
-                                                 @RequestParam(name = "orderBy", required = false)
-                                                         String orderBy
+                                                 @RequestParam(name = "orderBy", required = false, defaultValue = "id")
+                                                         String orderBy,
+                                                 @RequestParam(name = "page", required = false, defaultValue = "1")
+                                                         Integer page,
+                                                 @RequestParam(name = "perPage", required = false, defaultValue = "50")
+                                                         Integer perPage
     ) {
-        return certificateService.findCertificates(tagName, descriptionPart, orderBy);
+        return certificateService.findCertificates(tagName, descriptionPart, orderBy, page, perPage);
     }
 
     /**

@@ -13,6 +13,7 @@ public class CertificateSearchSqlBuilder {
     private static final String SQL_TAG_NAME_PART = "t.name = (:tag_name) ";
     private static final String SQL_DESCRIPTION_PART = " description like (:description) ";
     private static final String SQL_ORDER_BY_PART = " order by ";
+    private static final String SQL_PAGINATION_PART = " limit (:perPage) offset (:page)";
 
     public CertificateSearchSqlBuilder(String tagName, String descriptionPart,
                                        String orderBy) {
@@ -30,7 +31,7 @@ public class CertificateSearchSqlBuilder {
         String SQL;
         if(tagName == null && descriptionPart == null &&
                 !checkOrderBy()) {
-            return SQL_FIND_ALL;
+            return SQL_FIND_ALL + SQL_PAGINATION_PART;
         } else {
             SQL = SQL_FIND_ALL;
         }
@@ -47,6 +48,7 @@ public class CertificateSearchSqlBuilder {
         if(checkOrderBy()) {
             SQL = SQL + SQL_ORDER_BY_PART + orderBy;
         }
+        SQL = SQL + SQL_PAGINATION_PART;
         return SQL;
     }
 }

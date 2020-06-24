@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum OrderBy {
+    ID("id"),
     CREATION_DATE("creation_date"),
     MODIFICATION_DATE("modification_date"),
     NAME("name"),

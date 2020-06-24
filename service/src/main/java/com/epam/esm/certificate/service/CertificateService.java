@@ -91,7 +91,8 @@ public class CertificateService {
         }
     }
 
-    public List<CertificateDto> findCertificates(String tagName, String descriptionPart, String orderBy) {
+    public List<CertificateDto> findCertificates(String tagName, String descriptionPart, String orderBy,
+                                                 int page, int perPage) {
         CertificateSearchSqlBuilder specification =
                 new CertificateSearchSqlBuilder(tagName, descriptionPart, orderBy);
         if(orderBy != null && !specification.checkOrderBy()) {
@@ -99,6 +100,8 @@ public class CertificateService {
         }
         String query = specification.getSqlQuery();
         MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("page", (page - 1) * perPage);
+        parameters.addValue("perPage", perPage);
         if (tagName != null) {
             parameters.addValue("tag_name", tagName);
         }
