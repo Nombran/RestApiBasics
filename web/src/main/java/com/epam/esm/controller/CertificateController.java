@@ -74,8 +74,8 @@ public class CertificateController {
     @ResponseStatus(HttpStatus.OK)
     public List<CertificateDto> findCertificates(@RequestParam(name = "tagName", required = false)
                                                          String tagName,
-                                                 @RequestParam(name = "descriptionPart", required = false)
-                                                         String descriptionPart,
+                                                 @RequestParam(name = "textPart", required = false)
+                                                         String textPart,
                                                  @RequestParam(name = "orderBy", required = false, defaultValue = "id")
                                                          String orderBy,
                                                  @RequestParam(name = "page", required = false, defaultValue = "1")
@@ -85,7 +85,7 @@ public class CertificateController {
                                                  @Min(value = 1, message = "perPage param must be greater or equal to 1")
                                                          Integer perPage
     ) {
-        return certificateService.findCertificates(tagName, descriptionPart, orderBy, page, perPage);
+        return certificateService.findCertificates(tagName, textPart, orderBy, page, perPage);
     }
 
     /**

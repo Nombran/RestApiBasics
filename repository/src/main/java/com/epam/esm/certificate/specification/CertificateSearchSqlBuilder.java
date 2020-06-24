@@ -3,7 +3,7 @@ import java.util.stream.Stream;
 
 public class CertificateSearchSqlBuilder {
     private final String tagName;
-    private final String descriptionPart;
+    private final String textPart;
     private final String orderBy;
     private static final String  SQL_FIND_ALL = "select distinct certificate.id, certificate.name, description, price," +
             " creation_date, modification_date, duration from certificate";
@@ -11,14 +11,14 @@ public class CertificateSearchSqlBuilder {
             " = certificate_tag.certificate_id left join tag t on certificate_tag.tag_id" +
             " = t.id where ";
     private static final String SQL_TAG_NAME_PART = "t.name = (:tag_name) ";
-    private static final String SQL_DESCRIPTION_PART = " description like (:description) ";
+    private static final String SQL_DESCRIPTION_PART = "  search((:textPart), certificate) ";
     private static final String SQL_ORDER_BY_PART = " order by ";
     private static final String SQL_PAGINATION_PART = " limit (:perPage) offset (:page)";
 
-    public CertificateSearchSqlBuilder(String tagName, String descriptionPart,
+    public CertificateSearchSqlBuilder(String tagName, String textPart,
                                        String orderBy) {
         this.tagName = tagName;
-        this.descriptionPart = descriptionPart;
+        this.textPart = textPart;
         this.orderBy = orderBy;
     }
 
@@ -29,7 +29,7 @@ public class CertificateSearchSqlBuilder {
 
     public String getSqlQuery() {
         String SQL;
-        if(tagName == null && descriptionPart == null &&
+        if(tagName == null && textPart == null &&
                 !checkOrderBy()) {
             return SQL_FIND_ALL + SQL_PAGINATION_PART;
         } else {
@@ -37,11 +37,11 @@ public class CertificateSearchSqlBuilder {
         }
         if(tagName != null) {
             SQL = SQL + SQL_SELECT_JOINS + SQL_TAG_NAME_PART;
-            if(descriptionPart != null) {
+            if(textPart != null) {
                 SQL = SQL + " and " + SQL_DESCRIPTION_PART;
             }
         } else {
-            if(descriptionPart != null) {
+            if(textPart != null) {
                 SQL = SQL + SQL_SELECT_JOINS + SQL_DESCRIPTION_PART;
             }
         }

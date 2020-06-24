@@ -91,10 +91,10 @@ public class CertificateService {
         }
     }
 
-    public List<CertificateDto> findCertificates(String tagName, String descriptionPart, String orderBy,
+    public List<CertificateDto> findCertificates(String tagName, String textPart, String orderBy,
                                                  int page, int perPage) {
         CertificateSearchSqlBuilder specification =
-                new CertificateSearchSqlBuilder(tagName, descriptionPart, orderBy);
+                new CertificateSearchSqlBuilder(tagName, textPart, orderBy);
         if(orderBy != null && !specification.checkOrderBy()) {
             throw new IllegalArgumentException("Invalid orderBy parameter");
         }
@@ -105,8 +105,8 @@ public class CertificateService {
         if (tagName != null) {
             parameters.addValue("tag_name", tagName);
         }
-        if (descriptionPart != null) {
-            parameters.addValue("description", "%" + descriptionPart + "%");
+        if (textPart != null) {
+            parameters.addValue("textPart", "%" + textPart + "%");
         }
         return certificateDao.findCertificates(query, parameters)
                 .stream()

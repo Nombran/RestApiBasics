@@ -120,7 +120,9 @@ public class CertificateDaoTest {
         String tagName = "fifth tag";
         String query = new CertificateSearchSqlBuilder("fifth tag", null,null).getSqlQuery();
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("tag_name", tagName);
+                .addValue("tag_name", tagName)
+                .addValue("perPage", 50)
+                .addValue("page", 0);
         LocalDateTime expectedDateTime = LocalDateTime.of(2021,9,17,10,10);
         Certificate expectedCertificate = new Certificate(3, "certificate three", "third row",
                 new BigDecimal("2.5"), expectedDateTime, null, 18);
