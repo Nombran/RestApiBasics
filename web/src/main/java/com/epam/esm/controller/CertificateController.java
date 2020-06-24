@@ -32,11 +32,13 @@ public class CertificateController {
 
     /**
      * Field certificateService
+     * @see CertificateService
      */
     private final CertificateService certificateService;
 
     /**
      * Field tagService
+     * @see TagService
      */
     private final TagService tagService;
 
@@ -48,10 +50,20 @@ public class CertificateController {
     }
 
     /**
-     * @param tagName
-     * @param descriptionPart
-     * @param orderBy
-     * @return
+     * GET method findCertificates, that returns List of CertificateDto objects, which match <br>
+     * to all request params.<br>
+     *<p>
+     * [GET /api/v1/certificates/]<br>
+     * Request (application/json).<br>
+     * Response 200 (application/json).
+     *</p>
+     *
+     * @param tagName represents tag's name, connected with certificate
+     * @param descriptionPart represents part of full certificate's description
+     * @param orderBy represents field name for ordering by
+     * @return list of certificatesDto objects, which match to all request params
+     * @see CertificateDto
+     * @see com.epam.esm.certificate.model.Certificate
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -65,12 +77,39 @@ public class CertificateController {
         return certificateService.findCertificates(tagName, descriptionPart, orderBy);
     }
 
+    /**
+     * POST method ,which creates certificate entity, and all tags,<br>
+     * connected with it.<br>
+     * <p>
+     * [POST api/v1/certificates/]<br>
+     * Request (application/json).<br>
+     * Response 201 (application/json).
+     * </p>
+     *
+     * @param certificate represents dto object, which contain certificate<br>
+     * information and list of it's tags.
+     * @see CertificateDto
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@Valid @RequestBody CertificateDto certificate) {
         certificateService.create(certificate);
     }
 
+    /**
+     * PUT method, used to update existent certificate object<br>
+     * and all it's tags.<br>
+     * <p>
+     * [PUT /api/v1/certificates/id/]<br>
+     * Request (application/json).<br>
+     * Response 200 (application/json).
+     * </p>
+     *
+     * @param certificate represents dto object, which contain certificate<br>
+     * information and list of it's tags.
+     * @param id represents id of the certificate.
+     * @see CertificateDto
+     */
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void update(@Valid @RequestBody CertificateDto certificate, @PathVariable("id") long id) {
@@ -78,31 +117,94 @@ public class CertificateController {
         certificateService.update(certificate);
     }
 
+    /**
+     * DELETE method, which used to delete existent certificate, and all<br>
+     * relations to tags, connected with it.<br>
+     * <p>
+     * [DELETE /api/v1/certificates/id/]<br>
+     * Request (application/json).<br>
+     * Response 204 (application/json).
+     * </p>
+     *
+     * @param id represents id of the certificate.
+     * @see CertificateDto
+     */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") long id) {
         certificateService.delete(id);
     }
 
+    /**
+     * GET method, which used to get certificate dto object by it's id.<br>
+     * <p>
+     * [GET /api/v1/certificates/id/]<br>
+     * Request (application/json).<br>
+     * Response 200 (application/json).
+     * </p>
+     *
+     * @param id represents id of the certificate.
+     * @return certificateDto object, which contain all certificate<br>
+     * information and list of it's tags.
+     * @see CertificateDto
+     */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CertificateDto findById(@PathVariable("id") long id) {
         return certificateService.find(id);
     }
 
+    /**
+     * GET method, which used to get list of certificate's tags by certificate id<br>
+     * <p>
+     * [GET /api/v1/certificates/id/tags/]<br>
+     * Request (application/json).<br>
+     * Response 200 (application/json).
+     * </p>
+     *
+     * @param id represents id of the certificate.
+     * @return list of tag objects
+     * @see Tag
+     */
     @GetMapping(value = "/{id}/tags")
+    @ResponseStatus(HttpStatus.OK)
     public List<Tag> findAllCertificateTags(@PathVariable("id") long id) {
         return tagService.findTagsByCertificateId(id);
     }
 
+    /**
+     * POST method, which used to add tag to certificate by certificate id.<br>
+     * <p>
+     * [POST /api/v1/certificates/id/tags/]<br>
+     * Request (application/json).<br>
+     * Response 201 (application/json).
+     * </p>
+     *
+     * @param certificateId represents id of the certificate.
+     * @param tag represents tag object.
+     * @see Tag
+     */
     @PostMapping(value = "/{id}/tags")
     @ResponseStatus(HttpStatus.CREATED)
     public void addTag(@PathVariable("id") long certificateId, @RequestBody Tag tag) {
         certificateService.addCertificateTag(tag, certificateId);
     }
 
+    /**
+     * DELETE method, which used to delete relation between tag and certificate.<br>
+     * <p>
+     * [DELETE /api/v1/certificates/id/tags/tagId]<br>
+     * Request (application/json).<br>
+     * Response 204 (application/json).
+     * </p>
+     *
+     * @param certificateId represents id of the certificate.
+     * @param tagId represents id of the tag.
+     * @see com.epam.esm.certificate.model.Certificate
+     * @see Tag
+     */
     @DeleteMapping(value = "/{id}/tags/{tagId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCertificateTag(@PathVariable("id") long certificateId,
                                      @PathVariable("tagId") long tagId) {
         certificateService.deleteCertificateTag(certificateId, tagId);
