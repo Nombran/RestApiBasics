@@ -60,7 +60,7 @@ public class CertificateService {
         Certificate certificate = modelMapper.map(certificateDto, Certificate.class);
         long certificateId = certificate.getId();
         try {
-            if(!certificateDao.update(certificate)) {
+            if (!certificateDao.update(certificate)) {
                 throw new CertificateNotFoundException("Certificate with id "
                         + certificate.getId() + " doesn't exist");
             }
@@ -77,14 +77,14 @@ public class CertificateService {
     @Transactional
     public void delete(long id) {
         certificateTagDao.deleteByCertificateId(id);
-        if(!certificateDao.delete(id)) {
+        if (!certificateDao.delete(id)) {
             throw new CertificateNotFoundException("Certificate with id = " + id + " doesn't exist");
         }
     }
 
     public CertificateDto find(long id) {
         Optional<Certificate> certificate = certificateDao.find(id);
-        if(certificate.isPresent()) {
+        if (certificate.isPresent()) {
             return modelMapper.map(certificate.get(), CertificateDto.class);
         } else {
             throw new CertificateNotFoundException("Certificate with id = " + id + " doesn't exist");
@@ -95,7 +95,7 @@ public class CertificateService {
                                                  int page, int perPage) {
         CertificateSearchSqlBuilder specification =
                 new CertificateSearchSqlBuilder(tagName, textPart, orderBy);
-        if(orderBy != null && !specification.checkOrderBy()) {
+        if (orderBy != null && !specification.checkOrderBy()) {
             throw new IllegalArgumentException("Invalid orderBy parameter");
         }
         String query = specification.getSqlQuery();
@@ -115,14 +115,16 @@ public class CertificateService {
     }
 
     private void addCertificateTags(List<String> tags, long certificateId) {
-        tags.forEach(tagName -> {
-            Tag tag = tagDao.findByName(tagName).orElseGet(() -> {
-                Tag newTag = new Tag();
-                newTag.setName(tagName);
-                return tagDao.create(newTag);
-            });
-            certificateTagDao.create(certificateId, tag.getId());
-        });
+        tags.stream().
+                distinct().
+                forEach(tagName -> {
+                    Tag tag = tagDao.findByName(tagName).orElseGet(() -> {
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName);
+                        return tagDao.create(newTag);
+                    });
+                    certificateTagDao.create(certificateId, tag.getId());
+                });
     }
 
     private void updateCertificateTags(List<String> tags, long certificateId) {
@@ -136,6 +138,7 @@ public class CertificateService {
                 .map(Tag::getName)
                 .collect(Collectors.toList());
         List<String> tagsToAdd = tags.stream()
+                .distinct()
                 .filter(tagName -> !certificateTagNamesBeforeUpdate.contains(tagName))
                 .collect(Collectors.toList());
         addCertificateTags(tagsToAdd, certificateId);
@@ -163,8 +166,8 @@ public class CertificateService {
         if (certificateDao.find(certificateId).isPresent()) {
             tagDao.findByIdAndCertificateId(tagId, certificateId)
                     .orElseThrow(() -> new TagNotFoundException(
-                                "Certificate with id " + certificateId +
-                                        " doesnt have tag with id " + tagId)
+                            "Certificate with id " + certificateId +
+                                    " doesnt have tag with id " + tagId)
                     );
             certificateTagDao.delete(certificateId, tagId);
         } else {

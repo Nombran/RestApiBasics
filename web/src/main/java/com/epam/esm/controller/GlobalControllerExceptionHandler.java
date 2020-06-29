@@ -4,9 +4,12 @@ import com.epam.esm.certificate.exception.CertificateNotFoundException;
 import com.epam.esm.exception.ServiceConflictException;
 import com.epam.esm.tag.exception.TagNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +22,17 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalControllerExceptionHandler {
+
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public CustomErrorResponse handleMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex) {
+        CustomErrorResponse error = new CustomErrorResponse();
+        error.setTimestamp(LocalDateTime.now());
+        error.setStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
+        error.setError(HttpStatus.UNSUPPORTED_MEDIA_TYPE.toString());
+        error.setMessage(ex.getMessage());
+        return error;
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -35,7 +49,9 @@ public class GlobalControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({IllegalArgumentException.class,
-            ConstraintViolationException.class})
+            ConstraintViolationException.class,
+            MissingServletRequestParameterException.class,
+            HttpMessageNotReadableException.class})
     public CustomErrorResponse handleIllegalArgumentException(RuntimeException ex) {
         CustomErrorResponse error = new CustomErrorResponse();
         error.setTimestamp(LocalDateTime.now());
